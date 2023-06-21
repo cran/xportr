@@ -6,109 +6,157 @@ knitr::opts_chunk$set(
 
 library(DT)
 
-## ---- include=FALSE-----------------------------------------------------------
+options(cli.num_colors = 1)
+
+## ---- include=FALSE---------------------------------------
+options(width = 60)
 local({
-  hook_output <- knitr::knit_hooks$get('output')
+  hook_output <- knitr::knit_hooks$get("output")
   knitr::knit_hooks$set(output = function(x, options) {
-    if (!is.null(options$max.height)) options$attr.output <- c(
-      options$attr.output,
-      sprintf('style="max-height: %s;"', options$max.height)
-    )
+    if (!is.null(options$max.height)) {
+      options$attr.output <- c(
+        options$attr.output,
+        sprintf('style="max-height: %s;"', options$max.height)
+      )
+    }
     hook_output(x, options)
   })
 })
 
-## ---- eval = TRUE, message = FALSE, warning = FALSE---------------------------
+## ---- include=FALSE---------------------------------------
+knitr::knit_hooks$set(output = function(x, options) {
+  if (!is.null(options$max_height)) {
+    paste('<pre style = "max-height:',
+      options$max_height,
+      '; float: left; width: 775px; overflow-y: auto;">',
+      x, "</pre>",
+      sep = ""
+    )
+  } else {
+    x
+  }
+})
+
+## ---- include=FALSE---------------------------------------
+datatable_template <- function(input_data) {
+  datatable(
+    input_data,
+    rownames = FALSE,
+    options = list(
+      autoWidth = FALSE,
+      scrollX = TRUE,
+      pageLength = 5,
+      lengthMenu = c(5, 10, 15, 20)
+    )
+  ) %>%
+    formatStyle(
+      0,
+      target = "row",
+      color = "black",
+      backgroundColor = "white",
+      fontWeight = "500",
+      lineHeight = "85%",
+      fontSize = ".875em" # same as code
+    )
+}
+
+## ---- eval = TRUE, message = FALSE, warning = FALSE-------
 # Loading packages
 library(dplyr)
 library(labelled)
 library(xportr)
 library(admiral)
+library(rlang)
+library(readxl)
 
 # Loading in our example data
 adsl <- admiral::admiral_adsl
 
-## ---- echo = FALSE------------------------------------------------------------
-DT::datatable(adsl, options = list(
-  autoWidth = FALSE, scrollX = TRUE, pageLength = 5,
-  lengthMenu = c(5, 10, 15, 20)
-))
+## ---- echo = FALSE----------------------------------------
+datatable_template(adsl)
 
-## -----------------------------------------------------------------------------
-var_spec <- readxl::read_xlsx(
-  system.file(paste0("specs/", "ADaM_admiral_spec.xlsx"), package = "xportr"), sheet = "Variables") %>%
-  dplyr::rename(type = "Data Type") %>%
-  rlang::set_names(tolower) 
-  
+## ---------------------------------------------------------
+var_spec <- read_xlsx(
+  system.file(paste0("specs/", "ADaM_admiral_spec.xlsx"), package = "xportr"),
+  sheet = "Variables"
+) %>%
+  rename(type = "Data Type") %>%
+  set_names(tolower)
 
-## ---- echo = FALSE, eval = TRUE-----------------------------------------------
-var_spec_view <- var_spec %>% filter(dataset == "ADSL")
+## ---- echo = FALSE, eval = TRUE---------------------------
+var_spec_view <- var_spec %>%
+  filter(dataset == "ADSL")
 
-DT::datatable(var_spec_view, options = list(
-  autoWidth = FALSE, scrollX = TRUE, pageLength = 5,
-  lengthMenu = c(5, 10, 15, 20)
-))
+datatable_template(var_spec_view)
 
-## ---- eval = TRUE-------------------------------------------------------------
-look_for(adsl, details = TRUE)
-
-## ---- warning=FALSE, message=FALSE, echo = TRUE, results='hide'---------------
-adsl_type <- xportr_type(adsl, var_spec, domain = "ADSL", verbose = "message") 
-
-## ---- eval = TRUE-------------------------------------------------------------
-look_for(adsl_type, details = TRUE)
-
-## ---- echo = TRUE, eval = FALSE-----------------------------------------------
-#  str(adsl)
-
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----  max_height = "200px", echo = FALSE-----------------
 str(adsl)
 
-## -----------------------------------------------------------------------------
+## ---- echo = TRUE-----------------------------------------
+adsl_type <- xportr_type(adsl, var_spec, domain = "ADSL", verbose = "message")
+
+## ----  max_height = "200px", echo = FALSE-----------------
+str(adsl_type)
+
+## ----  max_height = "200px", echo = FALSE-----------------
+str(adsl)
+
+## ---------------------------------------------------------
 adsl_length <- adsl %>% xportr_length(var_spec, domain = "ADSL", "message")
 
-## ---- max.height='300px', attr.output='.numberLines', echo = TRUE-------------
+## ----  max_height = "200px", echo = FALSE-----------------
 str(adsl_length)
 
-## ---- warning=FALSE, message=FALSE, echo = TRUE, results='hide'---------------
-adsl_order <- xportr_order(adsl,var_spec, domain = "ADSL", verbose = "message") 
+## ---- echo = TRUE-----------------------------------------
+adsl_order <- xportr_order(adsl, var_spec, domain = "ADSL", verbose = "message")
 
-## ---- echo = FALSE------------------------------------------------------------
-DT::datatable(adsl_order, options = list(
-  autoWidth = FALSE, scrollX = TRUE, pageLength = 5,
-  lengthMenu = c(5, 10, 15, 20)
-))
+## ---- echo = FALSE----------------------------------------
+datatable_template(adsl_order)
 
-## -----------------------------------------------------------------------------
-attr(adsl$TRTSDT, "format.sas")
-attr(adsl$TRTEDT, "format.sas")
-attr(adsl$TRTSDTM, "format.sas")
-attr(adsl$TRTEDTM, "format.sas")
+## ---- max_height = "200px", echo = FALSE------------------
+adsl_fmt_pre <- adsl %>%
+  select(TRTSDT, TRTEDT, TRTSDTM, TRTEDTM)
 
-## -----------------------------------------------------------------------------
-adsl_fmt <- adsl %>% xportr_format(var_spec, domain = "ADSL", "message")
+tribble(
+  ~Variable, ~Format,
+  "TRTSDT", attr(adsl_fmt_pre$TRTSDT, which = "format"),
+  "TRTEDT", attr(adsl_fmt_pre$TRTEDT, which = "format"),
+  "TRTSDTM", attr(adsl_fmt_pre$TRTSDTM, which = "format"),
+  "TRTEDTM", attr(adsl_fmt_pre$TRTEDTM, which = "format")
+)
 
-## -----------------------------------------------------------------------------
-attr(adsl_fmt$TRTSDT, "format.sas")
-attr(adsl_fmt$TRTEDT, "format.sas")
-attr(adsl_fmt$TRTSDTM, "format.sas")
-attr(adsl_fmt$TRTEDTM, "format.sas")
+## ---------------------------------------------------------
+adsl_fmt <- adsl %>% xportr_format(var_spec, domain = "ADSL")
 
-## ---- eval = TRUE-------------------------------------------------------------
-look_for(adsl, details = FALSE)
+## ---- max_height = "200px", echo = FALSE------------------
+adsl_fmt_post <- adsl_fmt %>%
+  select(TRTSDT, TRTEDT, TRTSDTM, TRTEDTM)
 
-## -----------------------------------------------------------------------------
-adsl_update <- adsl %>% xportr_label(var_spec, domain = "ADSL", "message")
+tribble(
+  ~Variable, ~Format,
+  "TRTSDT", attr(adsl_fmt_post$TRTSDT, which = "format"),
+  "TRTEDT", attr(adsl_fmt_post$TRTEDT, which = "format"),
+  "TRTSDTM", attr(adsl_fmt_post$TRTSDTM, which = "format"),
+  "TRTEDTM", attr(adsl_fmt_post$TRTEDTM, which = "format")
+)
 
-## -----------------------------------------------------------------------------
-look_for(adsl_update, details = FALSE)
+## ----  max_height = "200px", echo = FALSE-----------------
+adsl_no_lbls <- haven::zap_label(adsl)
 
-## ---- eval=FALSE--------------------------------------------------------------
-#  adsl %>%
-#    xportr_type(var_spec, "ADSL", "message") %>%
-#    xportr_length(var_spec, "ADSL", "message") %>%
-#    xportr_label(var_spec, "ADSL", "message") %>%
-#    xportr_order(var_spec, "ADSL", "message") %>%
-#    xportr_format(var_spec, "ADSL", "message") %>%
-#    xportr_write("adsl.xpt", label = "Subject-Level Analysis Dataset")
+str(adsl_no_lbls)
+
+## ---------------------------------------------------------
+adsl_lbl <- adsl %>% xportr_label(var_spec, domain = "ADSL", "message")
+
+## ----  max_height = "200px"-------------------------------
+str(adsl_lbl)
+
+## ---------------------------------------------------------
+adsl %>%
+  xportr_type(var_spec, "ADSL", "message") %>%
+  xportr_length(var_spec, "ADSL", "message") %>%
+  xportr_label(var_spec, "ADSL", "message") %>%
+  xportr_order(var_spec, "ADSL", "message") %>%
+  xportr_format(var_spec, "ADSL") %>%
+  xportr_write("adsl.xpt", label = "Subject-Level Analysis Dataset")
 
