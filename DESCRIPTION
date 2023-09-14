@@ -1,6 +1,6 @@
 Package: xportr
 Title: Utilities to Output CDISC SDTM/ADaM XPT Files
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     c(
     person(given = "Eli",
@@ -59,7 +59,7 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends: R (>= 3.5)
 NeedsCompilation: no
-Packaged: 2023-06-20 19:56:31 UTC; eli.miller
+Packaged: 2023-09-14 13:02:41 UTC; eli.miller
 Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Vignesh Thanikachalam [aut],
   Ben Straub [aut],
@@ -75,4 +75,4 @@ Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Atorus/GSK JPT [cph]
 Maintainer: Eli Miller <Eli.Miller@AtorusResearch.com>
 Repository: CRAN
-Date/Publication: 2023-06-21 11:30:02 UTC
+Date/Publication: 2023-09-14 13:30:02 UTC
