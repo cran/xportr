@@ -1,9 +1,9 @@
-0a8c06ae00505330f313452239c8a087 *DESCRIPTION
+22d501ac07a086fd2c27a6d65c5b157b *DESCRIPTION
 305f110b525483a091cda435d0e81d9a *LICENSE
-ba29e07834cdedae9b45e911831717cf *NAMESPACE
-6bb4ade06eb993fe5f96e51d0921df7a *NEWS.md
+2c88ff011271c07be30e498bbd069fde *NAMESPACE
+75a2e9a135cf9966aa4ef8a85b4358c2 *NEWS.md
 aa876e1651be9d0a2e62a1e831891efa *R/data.R
-d0ff53a2aa6129c9f94d0fdbc1b51061 *R/df_label.R
+c47482ef70e1679a09825dbfef2033b3 *R/df_label.R
 d6eed7f49d9ec023487a2645b8d7c265 *R/format.R
 fb763d0a1c8beb44a93f208b1d0348b6 *R/label.R
 6486debae64d43f37fa252f5199db298 *R/length.R
@@ -14,7 +14,7 @@ becbcadff3f0fb385ba1ed5d184962ff *R/support-test.R
 23187ca7a796819922c61ca105d17f65 *R/type.R
 6310b9549c654f02d83ef2152b1b0e97 *R/utils-xportr.R
 738b33418052dcd20c196b316da3a874 *R/write.R
-55659bbbe68e1f9a5e059c21e4a7f65c *R/xportr-package.R
+4aac07b811cbe47526c5f7efd790fbb3 *R/xportr-package.R
 743f9f04dfda096b1d4b3358f626d1f9 *R/zzz.R
 1491f422c0d7b7e4e3b602dff5f60562 *README.md
 07d94057413d60babc5dbdf43b8d34eb *build/vignette.rds
@@ -23,10 +23,10 @@ f2d324e2459fd269a3b79785e1be6c55 *data/var_spec.rda
 b59f66951a0469cc4a7da03b1505df41 *inst/WORDLIST
 7199b6bbf56eb86f42973cdb4f998ae5 *inst/doc/deepdive.R
 9290948bee3bea3c205317e36103bb81 *inst/doc/deepdive.Rmd
-e3f423a80cdfaaa7593116edd404e5ae *inst/doc/deepdive.html
+86dc0661db239974d56619293fa2c6ac *inst/doc/deepdive.html
 2bf0d573961168d76c8b6c529a8e9e4a *inst/doc/xportr.R
 94c47762f13186b8543bdb840e4bc224 *inst/doc/xportr.Rmd
-d485ebaa19d2dbe267ee0ab4e1c41ca0 *inst/doc/xportr.html
+c29759587d385780ea2abaa86289c9dd *inst/doc/xportr.html
 7d6375bd040877a6394054427886b87f *inst/extdata/adae.sas7bdat
 5130953857b77e95bafee98f04b3c0a0 *inst/extdata/adlb.sas7bdat
 a6bc7ea1586f2f37e70e346056fceb6a *inst/extdata/adrace.sas7bdat
@@ -59,8 +59,8 @@ d401b150392bca212a78f28178a1b322 *man/type_log.Rd
 8ec6891fa980aa634ba025e5c673bbaa *man/var_names_log.Rd
 9a1f55fc7d997e2c68334e94cc5653ec *man/var_ord_msg.Rd
 5cd54e2d94bb90305b06492a5e5d03ad *man/var_spec.Rd
-9336775be3ed71871e56af4ca72fdae1 *man/xportr-package.Rd
-6a040c2c5a5f2e79fcadd56a38db37e2 *man/xportr_df_label.Rd
+bef11621ef1558a1126316da506658bc *man/xportr-package.Rd
+d5c890a896f07d6c898fdf868bd82375 *man/xportr_df_label.Rd
 7a4ed976535c5afda0046e85b5eed0f0 *man/xportr_format.Rd
 3ad1a80189081f9a75d26b46b55ee4fc *man/xportr_label.Rd
 388f74d6de04e9d4f8cd1da6f005f31a *man/xportr_length.Rd
@@ -72,7 +72,7 @@ e1a64d98c4cdb283bd592b03d1ab8116 *man/xportr_write.Rd
 5f72842e71bdc3a2581804694b734c6e *man/xpt_validate.Rd
 a66a79c89f5daeef0cb8ce02d61609c2 *tests/testthat.R
 6a1ff93a416f0a67dee5dae138c251a6 *tests/testthat/test-depreciation.R
-b38a27f1961c0d2453e84b86b78fed6d *tests/testthat/test-df_label.R
+71c189f2a4ac86399a0f280be818cefb *tests/testthat/test-df_label.R
 f7d668f67860e75cf19f15c7506b1e2d *tests/testthat/test-format.R
 b071f785852411164d1b472748fce182 *tests/testthat/test-label.R
 03d7b033d447ac5652f58bfc910f1ce8 *tests/testthat/test-length.R

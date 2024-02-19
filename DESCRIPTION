@@ -1,6 +1,6 @@
 Package: xportr
 Title: Utilities to Output CDISC SDTM/ADaM XPT Files
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: 
     c(
     person(given = "Eli",
@@ -48,18 +48,18 @@ URL: https://github.com/atorus-research/xportr
 BugReports: https://github.com/atorus-research/xportr/issues
 Imports: dplyr (>= 1.0.2), purrr (>= 0.3.4), stringr (>= 1.4.0),
         magrittr, glue (>= 1.4.2), rlang (>= 0.4.10), cli, tidyselect,
-        readr, janitor, tm, haven (>= 2.5.0), lifecycle
+        readr, haven (>= 2.5.0), lifecycle
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests: testthat (>= 3.0.0), withr, knitr, rmarkdown, readxl, DT,
         labelled, admiral, devtools, spelling, usethis, lintr, metacore
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends: R (>= 3.5)
 NeedsCompilation: no
-Packaged: 2023-09-14 13:02:41 UTC; eli.miller
+Packaged: 2024-02-19 13:24:21 UTC; eli.miller
 Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Vignesh Thanikachalam [aut],
   Ben Straub [aut],
@@ -75,4 +75,4 @@ Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Atorus/GSK JPT [cph]
 Maintainer: Eli Miller <Eli.Miller@AtorusResearch.com>
 Repository: CRAN
-Date/Publication: 2023-09-14 13:30:02 UTC
+Date/Publication: 2024-02-19 19:20:02 UTC
