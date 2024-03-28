@@ -1,4 +1,6 @@
-test_that("xportr_order: Variable are ordered correctly for data.frame spec", {
+# xportr_order ----
+## Test 1: xportr_order: Variable are ordered correctly for data.frame spec ----
+test_that("order Test 1: Variable are ordered correctly for data.frame spec", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     dataset = "df",
@@ -6,12 +8,13 @@ test_that("xportr_order: Variable are ordered correctly for data.frame spec", {
     order = 1:4
   )
 
-  ordered_df <- suppressMessages(xportr_order(df, df_meta))
+  ordered_df <- suppressMessages(xportr_order(df, df_meta, domain = "df"))
 
   expect_equal(names(ordered_df), df_meta$variable)
 })
 
-test_that("xportr_order: Variable are ordered correctly when data is piped", {
+## Test 2: xportr_order: Variable are ordered correctly when data is piped ----
+test_that("order Test 2: Variable are ordered correctly when data is piped", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     dataset = "df",
@@ -21,6 +24,7 @@ test_that("xportr_order: Variable are ordered correctly when data is piped", {
 
   ordered_df <- suppressMessages(
     df %>%
+      xportr_metadata(domain = "df") %>%
       xportr_order(df_meta) %>%
       xportr_order(df_meta)
   )
@@ -28,7 +32,8 @@ test_that("xportr_order: Variable are ordered correctly when data is piped", {
   expect_equal(names(ordered_df), df_meta$variable)
 })
 
-test_that("xportr_order: Variable are ordered correctly for custom domain", {
+## Test 3: xportr_order: Variable are ordered correctly for custom domain ----
+test_that("order Test 3: Variable are ordered correctly for custom domain", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     dataset = "DOMAIN",
@@ -43,7 +48,8 @@ test_that("xportr_order: Variable are ordered correctly for custom domain", {
   expect_equal(names(ordered_df), df_meta$variable)
 })
 
-test_that("xportr_order: Variable are ordered correctly for metacore spec", {
+## Test 4: xportr_order: Variable are ordered correctly for metacore spec ----
+test_that("order Test 4: Variable are ordered correctly for metacore spec", {
   skip_if_not_installed("metacore")
 
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
@@ -67,13 +73,14 @@ test_that("xportr_order: Variable are ordered correctly for metacore spec", {
   ))
 
   ordered_df <- suppressMessages(
-    xportr_order(df, metacore_meta)
+    xportr_order(df, metacore_meta, domain = "df")
   )
 
   expect_equal(names(ordered_df), ordered_columns)
 })
 
-test_that("xportr_order: Variable are ordered when custom domain_name is passed", {
+## Test 5: xportr_order: Variable are ordered when custom domain_name is passed ----
+test_that("order Test 5: Variable are ordered when custom domain_name is passed", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     custom_domain = "df",
@@ -88,7 +95,8 @@ test_that("xportr_order: Variable are ordered when custom domain_name is passed"
   expect_equal(names(ordered_df), df_meta$variable)
 })
 
-test_that("xportr_order: Expect error if domain is not a character", {
+## Test 6: xportr_order: Expect error if domain is not a character ----
+test_that("order Test 6: Expect error if domain is not a character", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     custom_domain = "df",
@@ -100,17 +108,18 @@ test_that("xportr_order: Expect error if domain is not a character", {
   expect_error(xportr_order(df, df_meta, domain = 1, verbose = "none"))
 })
 
-test_that("xportr_order: error when metadata is not set", {
+## Test 7: xportr_order: error when metadata is not set ----
+test_that("order Test 7: error when metadata is not set", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
 
   expect_error(
     xportr_order(df),
-    regexp = "Metadata must be set with `metadata` or `xportr_metadata\\(\\)`"
+    regexp = "Must be of type 'data.frame', 'Metacore' or set via 'xportr_metadata\\(\\)'"
   )
 })
 
-test_that("xportr_order: Variable ordering messaging is correct", {
-  skip_if_not_installed("haven")
+## Test 8: xportr_order: Variable ordering messaging is correct ----
+test_that("order Test 8: Variable ordering messaging is correct", {
   skip_if_not_installed("readxl")
 
   require(haven, quietly = TRUE)
@@ -126,19 +135,21 @@ test_that("xportr_order: Variable ordering messaging is correct", {
 
   # Remove empty lines in cli theme
   local_cli_theme()
+  suppressMessages(
+    xportr_order(df, df_meta, verbose = "message", domain = "df") %>%
+      expect_message("All variables in specification file are in dataset") %>%
+      expect_condition("4 reordered in dataset") %>%
+      expect_message("Variable reordered in `.df`: `a`, `b`, `c`, and `d`")
+  )
 
-  xportr_order(df, df_meta, verbose = "message") %>%
-    expect_message("All variables in specification file are in dataset") %>%
-    expect_condition("4 reordered in dataset") %>%
-    expect_message("Variable reordered in `.df`: `a`, `b`, `c`, and `d`")
-
-  xportr_order(df2, df_meta, verbose = "message") %>%
-    expect_message("2 variables not in spec and moved to end") %>%
+  suppressMessages(xportr_order(df2, df_meta, verbose = "message", domain = "df2") %>%
+    expect_message("2 variables not in spec and moved to end") %>% # nolint
     expect_message("Variable moved to end in `.df`: `a` and `z`") %>%
-    expect_message("All variables in dataset are ordered")
+    expect_message("All variables in dataset are ordered"))
 })
 
-test_that("xportr_order: Metadata order columns are coersed to numeric", {
+## Test 9: xportr_order: Metadata order columns are coersed to numeric ----
+test_that("order Test 9: Metadata order columns are coersed to numeric", {
   df <- data.frame(c = 1:5, a = "a", d = 5:1, b = LETTERS[1:5])
   df_meta <- data.frame(
     dataset = "df",
@@ -147,25 +158,43 @@ test_that("xportr_order: Metadata order columns are coersed to numeric", {
   )
 
   ordered_df <- suppressMessages(
-    xportr_order(df, df_meta)
+    xportr_order(df, df_meta, domain = "df")
   )
 
   expect_equal(names(ordered_df), df_meta$variable)
 })
 
-test_that("xportr_order: Gets warning when metadata has multiple rows with same variable", {
+## Test 10: xportr_order: Gets warning when metadata has multiple rows with same variable ----
+test_that("order Test 10: Gets warning when metadata has multiple rows with same variable", {
   # This test uses the (2) functions below to reduce code duplication
   # All `expect_*` are being called inside the functions
   #
   # Checks that message appears when xportr.domain_name is invalid
-  multiple_vars_in_spec_helper(xportr_order) %>%
-    # expect_message() are being caught to provide clean test without output
+  suppressMessages(multiple_vars_in_spec_helper(xportr_order) %>%
+    # expect_message() are being caught to provide clean test without output      #nolint
     expect_message("All variables in specification file are in dataset") %>%
-    expect_message("All variables in dataset are ordered")
+    expect_message("All variables in dataset are ordered"))
 
   # Checks that message doesn't appear when xportr.domain_name is valid
-  multiple_vars_in_spec_helper2(xportr_order) %>%
-    # expect_message() are being caught to provide clean test without output
+  suppressMessages(multiple_vars_in_spec_helper2(xportr_order) %>%
+    # expect_message() are being caught to provide clean test without output     #nolint
     expect_message("All variables in specification file are in dataset") %>%
-    expect_message("All variables in dataset are ordered")
+    expect_message("All variables in dataset are ordered"))
+})
+
+
+## Test 11: xportr_order: Works as expected with only one domain in metadata ----
+test_that("order Test 11: Works as expected with only one domain in metadata", {
+  adsl <- data.frame(
+    USUBJID = c(1001, 1002, 1003),
+    BRTHDT = c(1, 1, 2)
+  )
+
+  metadata <- data.frame(
+    dataset = c("adsl", "adsl"),
+    variable = c("USUBJID", "BRTHDT"),
+    order = c(1, 2)
+  )
+
+  expect_equal(xportr_order(adsl, metadata), adsl)
 })

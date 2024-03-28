@@ -36,7 +36,7 @@ install.packages("xportr")
 ### Development version:
 
 ``` r
-devtools::install_github("https://github.com/atorus-research/xportr.git", ref = "devel")
+install.packages("xportr", repos = c("https://pharmaverse.r-universe.dev", getOption("repos")))
 ```
 
 # What is xportr?
@@ -100,32 +100,30 @@ All of which can be done using a well-defined specification file and the
 `{xportr}` package!
 
 First we will start with our `ADSL` dataset created in R. This example
-`ADSL` dataset is taken from the
-[`{admiral}`](https://pharmaverse.github.io/admiral/index.html) package.
-The script that generates this `ADSL` dataset can be created by using
-this command `admiral::use_ad_template("adsl")`. This `ADSL` dataset has
-306 observations and 48 variables.
+`ADSL` dataset contains 306 observations and 51 variables.
 
 ``` r
 library(dplyr)
-library(admiral)
 library(xportr)
 
-adsl <- admiral::admiral_adsl
+data("adsl_xportr")
+ADSL <- adsl_xportr
 ```
 
-We have created a dummy specification file called
-`ADaM_admiral_spec.xlsx` found in the `specs` folder of this package.
-You can use
-`system.file(paste0("specs/", "ADaM_admiral_spec.xlsx"), package = "xportr")`
+We have created a dummy specification file called `ADaM_spec.xlsx` found
+in the `specs` folder of this package. You can use
+`system.file(file.path("specs/", "ADaM_spec.xlsx"), package = "xportr")`
 to access this file.
 
 ``` r
-spec_path <- system.file(paste0("specs/", "ADaM_admiral_spec.xlsx"), package = "xportr")
+spec_path <- system.file(file.path("specs", "ADaM_spec.xlsx"), package = "xportr")
 
 var_spec <- readxl::read_xlsx(spec_path, sheet = "Variables") %>%
   dplyr::rename(type = "Data Type") %>%
-  rlang::set_names(tolower)
+  dplyr::rename_with(tolower)
+dataset_spec <- readxl::read_xlsx(spec_path, sheet = "Datasets") %>%
+  dplyr::rename(label = "Description") %>%
+  dplyr::rename_with(tolower)
 ```
 
 Each `xportr_` function has been written in a way to take in a part of
@@ -134,13 +132,15 @@ the specification file and apply that piece to the dataset. Setting
 We have suppressed the warning for the sake of brevity.
 
 ``` r
-adsl %>%
-  xportr_type(var_spec, "ADSL", verbose = "warn") %>%
-  xportr_length(var_spec, "ADSL", verbose = "warn") %>%
-  xportr_label(var_spec, "ADSL", verbose = "warn") %>%
-  xportr_order(var_spec, "ADSL", verbose = "warn") %>%
-  xportr_format(var_spec, "ADSL") %>%
-  xportr_write("adsl.xpt", label = "Subject-Level Analysis Dataset")
+ADSL %>%
+  xportr_metadata(var_spec, "ADSL") %>%
+  xportr_type(verbose = "warn") %>%
+  xportr_length(verbose = "warn") %>%
+  xportr_label(verbose = "warn") %>%
+  xportr_order(verbose = "warn") %>%
+  xportr_format() %>%
+  xportr_df_label(dataset_spec, "ADSL") %>%
+  xportr_write("adsl.xpt")
 ```
 
 The `xportr_metadata()` function can reduce duplication by setting the
@@ -149,14 +149,29 @@ If you would like to use the `verbose` argument, you will need to set in
 each function call.
 
 ``` r
-adsl %>%
-  xportr_metadata(var_spec, "ADSL") %>%
+ADSL %>%
+  xportr_metadata(var_spec, "ADSL", verbose = "warn") %>%
   xportr_type() %>%
   xportr_length() %>%
   xportr_label() %>%
   xportr_order() %>%
   xportr_format() %>%
-  xportr_write("adsl.xpt", label = "Subject-Level Analysis Dataset")
+  xportr_df_label(dataset_spec) %>%
+  xportr_write("adsl.xpt")
+```
+
+Furthermore, if you’re calling all xportr functions at once with common
+metadata and verbosity, you can shorten it by simply using `xportr()`.
+
+``` r
+xportr(
+  .df = ADSL,
+  var_metadata = var_spec,
+  df_metadata = dataset_spec,
+  domain = "ADSL",
+  verbose = "warn",
+  "adsl.xpt"
+)
 ```
 
 That’s it! We now have a xpt file created in R with all appropriate

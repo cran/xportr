@@ -8,7 +8,7 @@ xportr_label(
   .df,
   metadata = NULL,
   domain = NULL,
-  verbose = getOption("xportr.label_verbose", "none"),
+  verbose = NULL,
   metacore = deprecated()
 )
 }
@@ -18,9 +18,8 @@ xportr_label(
 \item{metadata}{A data frame containing variable level metadata. See
 'Metadata' section for details.}
 
-\item{domain}{Appropriate CDSIC dataset name, e.g. ADAE, DM. Used to subset
-the metadata object. If none is passed, then name of the dataset passed as
-.df will be used.}
+\item{domain}{Appropriate CDISC dataset name, e.g. ADAE, DM. Used to subset
+the metadata object.}
 
 \item{verbose}{The action this function takes when an action is taken on the
 dataset or function validation finds an issue. See 'Messaging' section for
@@ -84,5 +83,5 @@ metadata <- data.frame(
   label = c("Unique Subject Identifier", "Study Site Identifier", "Age", "Sex")
 )
 
-adsl <- xportr_label(adsl, metadata)
+adsl <- xportr_label(adsl, metadata, domain = "adsl")
 }

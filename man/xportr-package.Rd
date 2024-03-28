@@ -2,7 +2,6 @@
 % Please edit documentation in R/xportr-package.R
 \docType{package}
 \name{xportr-package}
-\alias{xportr}
 \alias{xportr-package}
 \title{The \code{xportr} package}
 \description{
@@ -10,7 +9,7 @@
 CDISC complaint data sets in R, to XPT version 5 files. It was designed with
 options in mind to allow for flexible setting of options while allowing
 projects and system administrators to set sensible defaults for their
-orginziations workflows. Below are a list of options that can be set to
+organizations workflows. Below are a list of options that can be set to
 customize how \code{xportr} works in your environment.
 }
 \section{xportr options}{
@@ -46,12 +45,12 @@ xportr.length - The name of the variable length column in variable
 metadata. Default: "length"
 }
 \item{
-xportr.format_name - The name of the variable format column in variable
-metadata. Default: "format"
-}
-\item{
 xportr.order_name - The name of the variable order column in variable
 metadata. Default: "order"
+}
+\item{
+xportr.format_name - The name of the variable format column in variable
+metadata. Default: "format"
 }
 \item{
 xportr.format_verbose - The default argument for the 'verbose' argument for
@@ -71,15 +70,23 @@ xportr.type_verbose - The default argument for the 'verbose' argument for
 }
 \item{
 xportr.character_types - The default character vector used to explicitly
+coerce R classes to character XPT types. Default:  "character"
+}
+\item{
+xportr.character_metadata_types - The default character vector used to explicitly
 coerce R classes to character XPT types. Default: c("character", "char",
 "text", "date", "posixct", "posixt", "datetime", "time", "partialdate",
 "partialtime", "partialdatetime", "incompletedatetime", "durationdatetime",
-"intervaldatetime")
+"intervaldatetime")`
+}
+\item{
+xportr.numeric_metadata_types - The default character vector used to explicitly
+coerce R classes to numeric XPT types. Default: c("integer", "numeric", "num", "float")
 }
 \item{
 xportr.numeric_types - The default character vector used to explicitly
-coerce R classes to numeric XPT types. Default: c("integer", "numeric",
-"num", "float")
+coerce R classes to numeric XPT types. Default: c("integer", "float",
+"numeric", "posixct", "posixt", "time", "date")
 }
 }
 }
@@ -97,13 +104,12 @@ update in the \code{.Rprofile} file in the users home directory.}
 \item{To change an option for all users in an R environment, place the
 options update in the \code{.Rprofile.site} file in the R home directory.}
 }
-
-See \href{https://support.posit.co/hc/en-us/articles/360047157094-Managing-R-with-Rprofile-Renviron-Rprofile-site-Renviron-site-rsession-conf-and-repos-conf}{Managing R with .Rprofile, .Renviron, Rprofile.site, Renviron.site, rsession.conf, and repos.conf} # nolint
 }
 
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://atorus-research.github.io/xportr/}
   \item \url{https://github.com/atorus-research/xportr}
   \item Report bugs at \url{https://github.com/atorus-research/xportr/issues}
 }
@@ -114,15 +120,14 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Vignesh  Thanikachalam
   \item Ben Straub
-  \item Ross Didenko
   \item Zelos Zhu
   \item Ethan Brockmann
   \item Vedha Viyash
   \item Andre Verissimo
   \item Sophie Shapcott
   \item Celine Piraux
+  \item Kangjie Zhang
   \item Adrian Chan
   \item Sadchla Mascary
 }
