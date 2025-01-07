@@ -1,11 +1,12 @@
 #' Coerce variable type
 #'
-#' XPT v5 datasets only have data types of character and numeric. `xportr_type`
+#' XPT v5 datasets only have data types of character and numeric. `xportr_type()`
 #' attempts to collapse R classes to those two XPT types. The
 #' 'xportr.character_types' option is used to explicitly collapse the class of a
-#' column to character using `as.character`. Similarly, 'xportr.numeric_types'
-#' will collapse a column to a numeric type. If no type is passed for a
-#' variable, it is assumed to be numeric and coerced with `as.numeric()`.
+#' column to character using `as.character()`. Similarly, 'xportr.numeric_types'
+#' will collapse a column to a numeric type. (See `xportr_options()` for default
+#' values of these options.) If no type is passed for a variable, it is assumed
+#' to be numeric and coerced with `as.numeric()`.
 #'
 #' Certain care should be taken when using timing variables. R serializes dates
 #' based on a reference date of 01/01/1970 where XPT uses 01/01/1960. This can
@@ -17,7 +18,7 @@
 #'
 #' @section Messaging: `type_log()` is the primary messaging tool for
 #'   `xportr_type()`. The number of column types that mismatch the reported type
-#'   in the metadata, if any, is reported by by `xportr_type()`. If there are any
+#'   in the metadata, if any, is reported by `xportr_type()`. If there are any
 #'   type mismatches, and the 'verbose' argument is 'stop', 'warn', or
 #'   'message', each mismatch will be detailed with the actual type in the data
 #'   and the type noted in the metadata.
@@ -112,12 +113,15 @@ xportr_type <- function(.df,
   if (inherits(metadata, "Metacore")) metadata <- metadata$var_spec
 
   if (domain_name %in% names(metadata) && !is.null(domain)) {
+    # If 'domain' passed by user isn't found in metadata, return error
+    if (!domain %in% metadata[[domain_name]]) log_no_domain(domain, domain_name, verbose)
+
     metadata <- metadata %>%
       filter(!!sym(domain_name) == .env$domain)
   }
 
   metacore <- metadata %>%
-    select(!!sym(variable_name), !!sym(type_name))
+    select(variable = !!sym(variable_name), type = !!sym(type_name))
 
   # Common check for multiple variables name
   check_multiple_var_specs(metadata, variable_name)
@@ -128,10 +132,12 @@ xportr_type <- function(.df,
   # Produces a data.frame with Variables, Type.x(Table), and Type.y(metadata)
   meta_ordered <- left_join(
     data.frame(variable = names(.df), type = unlist(table_cols_types)),
-    metadata,
+    metacore,
     by = "variable"
   ) %>%
     mutate(
+      orig_type_data = type.x,
+      orig_type_meta = type.y,
       # _character is used here as a mask of character, in case someone doesn't
       # want 'character' coerced to character
       type.x = if_else(type.x %in% character_types, "_character", type.x),
@@ -154,11 +160,11 @@ xportr_type <- function(.df,
 
   # Check if variable types match
   is_correct <- vapply(meta_ordered[["type.x"]] == meta_ordered[["type.y"]], isTRUE, logical(1))
-  # Use the original variable iff metadata is missing that variable
+  # Use the original variable if metadata is missing that variable
   correct_type <- ifelse(is.na(meta_ordered[["type.y"]]), meta_ordered[["type.x"]], meta_ordered[["type.y"]])
 
   # Walk along the columns and coerce the variables. Modifying the columns
-  # Directly instead of something like map_dfc to preserve any attributes.
+  # directly instead of something like map_dfc to preserve any attributes.
   iwalk(
     correct_type,
     function(x, i, is_correct) {

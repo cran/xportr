@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = " "
@@ -8,7 +8,7 @@ options(cli.num_colors = 1)
 
 library(DT)
 
-## ---- include=FALSE-----------------------------------------------------------
+## ----include=FALSE------------------------------------------------------------
 # Used to control str() output later on
 
 local({
@@ -24,7 +24,7 @@ local({
   })
 })
 
-## ---- message = FALSE---------------------------------------------------------
+## ----message = FALSE----------------------------------------------------------
 library(xportr)
 library(dplyr)
 library(haven)
@@ -33,7 +33,7 @@ data("adsl_xportr", "var_spec", "dataset_spec", package = "xportr")
 colnames(var_spec)
 ADSL <- adsl_xportr
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  xportr_options(
 #    xportr.variable_name = "Variable",
 #    xportr.label = "Label",
@@ -53,7 +53,7 @@ ADSL <- adsl_xportr
 #    xportr.order_name = "Order"
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  # Default verbose is set to `none`
 #  xportr_options(
 #    xportr.format_verbose = "none",
@@ -69,7 +69,7 @@ ADSL <- adsl_xportr
 #    xportr.type_verbose = "stop" # Stops execution and sends an error message to the console
 #  )
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  ADSL %>%
 #    xportr_type(var_spec, "ADSL", "message") %>%
 #    xportr_length(var_spec, "ADSL", verbose = "message") %>%
@@ -79,7 +79,7 @@ ADSL <- adsl_xportr
 #    xportr_df_label(dataset_spec, "ADSL") %>%
 #    xportr_write("adsl.xpt")
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  ADSL %>%
 #    xportr_metadata(var_spec, "ADSL") %>%
 #    xportr_type() %>%
@@ -99,7 +99,7 @@ dataset_spec <- dataset_spec %>%
   rename(label = "Description") %>%
   rename_with(tolower)
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 columns2hide <- c(
   "significant digits", "mandatory", "assigned value", "codelist", "common",
   "origin", "pages", "method", "predecessor", "role", "comment",
@@ -140,30 +140,30 @@ datatable(
 adsl_fct <- ADSL %>%
   mutate(STUDYID = as_factor(STUDYID))
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 adsl_glimpse <- adsl_fct %>%
   select(STUDYID, TRTSDT, TRTEDT, SCRFDT, EOSDT, FRVDT, RANDDT, DTHDT, LSTALVDT)
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 glimpse(adsl_glimpse)
 
-## ---- echo = TRUE-------------------------------------------------------------
+## ----echo = TRUE--------------------------------------------------------------
 adsl_type <- xportr_type(.df = adsl_fct, metadata = var_spec, domain = "ADSL", verbose = "warn")
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 adsl_type_glimpse <- adsl_type %>%
   select(STUDYID, TRTSDT, TRTEDT, SCRFDT, EOSDT, FRVDT, RANDDT, DTHDT, LSTALVDT)
 
-## ---- echo = TRUE-------------------------------------------------------------
+## ----echo = TRUE--------------------------------------------------------------
 glimpse(adsl_type_glimpse)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 adsl_type <- xportr_type(.df = adsl_fct, metadata = var_spec, domain = "ADSL", verbose = "stop")
 
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----max.height='300px', attr.output='.numberLines', echo = FALSE-------------
 str(ADSL)
 
-## ---- echo = TRUE-------------------------------------------------------------
+## ----echo = TRUE--------------------------------------------------------------
 adsl_length <- xportr_length(
   .df = ADSL,
   metadata = var_spec,
@@ -172,10 +172,10 @@ adsl_length <- xportr_length(
   length_source = "metadata"
 )
 
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----max.height='300px', attr.output='.numberLines', echo = FALSE-------------
 str(adsl_length)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 adsl_length <- xportr_length(
   .df = ADSL,
   metadata = var_spec,
@@ -184,7 +184,7 @@ adsl_length <- xportr_length(
   length_source = "metadata"
 )
 
-## ---- echo = TRUE-------------------------------------------------------------
+## ----echo = TRUE--------------------------------------------------------------
 var_spec_lbl <- var_spec %>%
   mutate(label = if_else(variable == "TRTSDT",
     "Length of variable label must be 40 characters or less", label
@@ -194,33 +194,33 @@ adsl_lbl <- ADSL
 
 adsl_lbl <- haven::zap_label(ADSL)
 
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----max.height='300px', attr.output='.numberLines', echo = FALSE-------------
 str(adsl_lbl)
 
 ## -----------------------------------------------------------------------------
 adsl_lbl <- xportr_label(.df = adsl_lbl, metadata = var_spec_lbl, domain = "ADSL", verbose = "warn")
 
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----max.height='300px', attr.output='.numberLines', echo = FALSE-------------
 str(adsl_lbl)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 adsl_label <- xportr_label(.df = adsl_lbl, metadata = var_spec_lbl, domain = "ADSL", verbose = "stop")
 
 ## -----------------------------------------------------------------------------
 adsl_ord <- xportr_order(.df = ADSL, metadata = var_spec, domain = "ADSL", verbose = "warn")
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 adsl_ord <- xportr_order(.df = ADSL, metadata = var_spec, domain = "ADSL", verbose = "stop")
 
-## ---- echo = TRUE-------------------------------------------------------------
+## ----echo = TRUE--------------------------------------------------------------
 adsl_fmt <- ADSL %>%
   xportr_type(metadata = var_spec, domain = "ADSL", verbose = "warn") %>%
   xportr_format(metadata = var_spec, domain = "ADSL")
 
-## ---- max.height='300px', attr.output='.numberLines', echo = FALSE------------
+## ----max.height='300px', attr.output='.numberLines', echo = FALSE-------------
 str(adsl_fmt)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 ADSL %>%
   xportr_metadata(var_spec, "ADSL") %>%
   xportr_type() %>%
@@ -231,11 +231,11 @@ ADSL %>%
   xportr_df_label(dataset_spec) %>%
   xportr_write(path = "adsl.xpt", strict_checks = FALSE)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 ADSL %>%
   xportr_write(path = "adsl.xpt", metadata = dataset_spec, domain = "ADSL", strict_checks = TRUE)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 var_spec_lbl <- var_spec %>%
   mutate(label = if_else(variable == "TRTSDT",
     "Length of variable label must be 40 characters or less", label
@@ -249,7 +249,7 @@ ADSL %>%
   xportr_df_label(dataset_spec) %>%
   xportr_write(path = "adsl.xpt", strict_checks = TRUE)
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 xportr(
   ADSL,
   var_metadata = var_spec,
@@ -259,7 +259,7 @@ xportr(
   path = "adsl.xpt"
 )
 
-## ---- echo = TRUE, error = TRUE-----------------------------------------------
+## ----echo = TRUE, error = TRUE------------------------------------------------
 ADSL %>%
   xportr_metadata(var_spec, "ADSL") %>%
   xportr_type() %>%

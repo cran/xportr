@@ -231,11 +231,11 @@ test_that("type Test 7: xportr_type: date variables are not converted to numeric
   adsl_original$RFICDTM <- as.POSIXct(adsl_original$RFICDTM)
 
   expect_message(
-    adsl_xpt2 <- adsl_original %>% xportr_type(metadata, domain = "adsl_original"),
+    adsl_xpt2 <- adsl_original %>% xportr_type(metadata, domain = "adsl"),
     NA
   )
 
-  attr(adsl_original, "_xportr.df_arg_") <- "adsl_original"
+  attr(adsl_original, "_xportr.df_arg_") <- "adsl"
 
   expect_equal(adsl_original, adsl_xpt2)
 })
@@ -300,7 +300,7 @@ test_that("type Test 10: Var date types (--DTC) coerced as expected and raise me
       xportr_type()
   ) %>%
     expect_message("Variable type mismatches found.") %>%
-    expect_message("[0-9+] variables coerced")
+    expect_message("[0-9+] variables? coerced")
 
   expect_equal(purrr::map_chr(df2, class), c(
     STUDYID = "character", USUBJID = "character",
@@ -324,4 +324,24 @@ test_that("type Test 11: Works as expected with only one domain in metadata", {
   )
 
   expect_equal(xportr_type(adsl, metadata), adsl)
+})
+
+# xportr_type ----
+## Test 12: xportr_type: xportr_options() overrides work properly ----
+test_that("type Test 12: xportr_options() overrides work properly", {
+  op <- options()
+
+  data("adsl_xportr", "var_spec", package = "xportr")
+  var_spec <- distinct(var_spec, Variable, .keep_all = TRUE) # quick fix because there's dups in the data
+
+  xportr_options(
+    xportr.variable_name = "Variable",
+    xportr.type_name = "Data Type"
+  )
+
+  expect_silent(
+    adsl_xportr %>% xportr_type(var_spec, "ADSL", "message")
+  )
+
+  options(op)
 })

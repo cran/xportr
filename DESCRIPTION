@@ -1,6 +1,6 @@
 Package: xportr
 Title: Utilities to Output CDISC SDTM/ADaM XPT Files
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: c(
     person("Eli", "Miller", , "Eli.Miller@AtorusResearch.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-2127-9456")),
@@ -33,7 +33,7 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2024-10-07 17:13:12 UTC; eli.miller
+Packaged: 2024-12-24 18:49:04 UTC; eli.miller
 Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Ben Straub [aut],
   Zelos Zhu [aut],
@@ -48,4 +48,4 @@ Author: Eli Miller [aut, cre] (<https://orcid.org/0000-0002-2127-9456>),
   Atorus/GSK JPT [cph]
 Maintainer: Eli Miller <Eli.Miller@AtorusResearch.com>
 Repository: CRAN
-Date/Publication: 2024-10-07 17:30:02 UTC
+Date/Publication: 2025-01-07 15:30:01 UTC
