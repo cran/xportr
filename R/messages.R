@@ -55,14 +55,14 @@ var_names_log <- function(tidy_names_df, verbose) {
 
   # Message stating any renamed variables each original variable and it's new name
   if (nrow(only_renames) > 0) {
-    purrr::walk(only_renames$renamed_msg, ~ xportr_logger(.x, verbose))
+    walk(only_renames$renamed_msg, ~ xportr_logger(.x, verbose))
   }
 
   # Message checking for duplicate variable names after renamed (Pretty sure
   # this is impossible) but good to have a check none-the-less.
   dups <- tidy_names_df %>% filter(renamed_n > 1)
   if (nrow(dups) != 0) {
-    cli::cli_alert_danger(
+    cli_alert_danger(
       glue(
         .sep = " ",
         "Duplicate renamed term(s) were created.",
@@ -144,13 +144,15 @@ length_log <- function(miss_vars, miss_length, verbose) {
     cli_h2("Variable lengths missing from metadata.")
     cli_alert_success("{ length(c(miss_vars, miss_length)) } lengths resolved {encode_vars(c(miss_vars, miss_length))}")
 
-    xportr_logger(
-      glue(
-        "Variable(s) present in dataframe but doesn't exist in `metadata`.",
-        "Problem with {encode_vars(miss_vars)}"
-      ),
-      type = verbose
-    )
+    if (length(miss_vars) > 0) {
+      xportr_logger(
+        glue(
+          "Variable(s) present in dataframe but doesn't exist in `metadata`.",
+          "Problem with {encode_vars(miss_vars)}"
+        ),
+        type = verbose
+      )
+    }
   }
 }
 
@@ -259,4 +261,28 @@ log_no_domain <- function(domain, domain_name, verbose) {
     ),
     type = verbose
   )
+}
+
+#' Utility for Metadata Variables Not in Data
+#'
+#' @param miss_meta_vars Variables in metadata but not present in dataset
+#' @param verbose Provides additional messaging for user
+#'
+#' @return Output to Console
+#' @noRd
+metadata_vars_log <- function(miss_meta_vars, verbose) {
+  assert_character(miss_meta_vars)
+  assert_choice(verbose, choices = .internal_verbose_choices)
+
+  if (length(miss_meta_vars) > 0) {
+    cli_h2("Variables in metadata not found in dataset.")
+    cli_alert_success("{ length(miss_meta_vars) } metadata variables skipped")
+
+    xportr_logger(
+      c("Variable(s) present in `metadata` but don't exist in dataframe.",
+        x = glue("Problem with {encode_vars(miss_meta_vars)}")
+      ),
+      type = verbose
+    )
+  }
 }

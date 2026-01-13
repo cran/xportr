@@ -133,8 +133,8 @@ xpt_validate_var_names <- function(varnames,
   }
 
   # 1.2 Check first character --
-  chk_first_chr <- varnames[stringr::str_detect(
-    stringr::str_sub(varnames, 1, 1),
+  chk_first_chr <- varnames[str_detect(
+    str_sub(varnames, 1, 1),
     "[^[:alpha:]]"
   )]
 
@@ -147,7 +147,7 @@ xpt_validate_var_names <- function(varnames,
   }
 
   # 1.3 Check Non-ASCII and underscore characters --
-  chk_alnum <- varnames[stringr::str_detect(varnames, "[^a-zA-Z0-9]")]
+  chk_alnum <- varnames[str_detect(varnames, "[^a-zA-Z0-9]")]
 
   if (length(chk_alnum) > 0) {
     err_cnd <- c(err_cnd, ifelse(list_vars_first,
@@ -158,8 +158,8 @@ xpt_validate_var_names <- function(varnames,
   }
 
   # 1.4 Check for any lowercase letters - or not all uppercase
-  chk_lower <- varnames[!stringr::str_detect(
-    stringr::str_replace_all(varnames, "[:digit:]", ""),
+  chk_lower <- varnames[!str_detect(
+    str_replace_all(varnames, "[:digit:]", ""),
     "^[[:upper:]]+$"
   )]
 
@@ -170,7 +170,7 @@ xpt_validate_var_names <- function(varnames,
                       Cannot contain any lowercase characters {fmt_vars(chk_lower)}.")
     ))
   }
-  return(err_cnd)
+  err_cnd
 }
 
 #' Internal list of formats to check
@@ -238,6 +238,18 @@ xpt_validate_var_names <- function(varnames,
 #' Function used to validate dataframes before they are sent to
 #' `haven::write_xpt` for writing.
 #'
+#' @details `xpt_validate()` performs four focused checks before
+#'   `xportr_write()` attempts to create an XPT file:
+#'   * **Variable names** – maximum of 8 characters, must start with a letter,
+#'     use only ASCII alphanumeric characters (no underscores or symbols), and
+#'     remain uppercase.
+#'   * **Variable labels** – maximum of 40 characters and limited to ASCII
+#'     printable characters.
+#'   * **Formats** – SAS format attributes must match the internal allow-list or
+#'     follow a `w.d` pattern such as `8.` or `12.3`.
+#'   * **Character data lengths** – each character column's maximum byte length
+#'     cannot exceed 200.
+#'
 #' @param data Dataset to be exported as xpt file
 #'
 #' @return Returns a character vector of failed conditions
@@ -267,7 +279,7 @@ xpt_validate <- function(data) {
   }
 
   # 2.2 Check Non-ASCII and special characters
-  chk_spl_chr <- labels[stringr::str_detect(labels, "[^[:ascii:]]")]
+  chk_spl_chr <- labels[str_detect(labels, "[^[:ascii:]]")]
 
   if (length(chk_spl_chr) > 0) {
     err_cnd <- c(
@@ -288,7 +300,7 @@ xpt_validate <- function(data) {
 
   # 3.1 Invalid types
   is_valid <- toupper(formats) %in% toupper(expected_formats) |
-    purrr::map_lgl(formats, stringr::str_detect, format_regex)
+    map_lgl(formats, str_detect, format_regex)
 
   chk_formats <- formats[!is_valid]
   ## Remove the correctly numerically formatted variables
@@ -310,7 +322,35 @@ xpt_validate <- function(data) {
     )
   }
 
-  return(err_cnd)
+  # 5.0 Check Class for date, datetime and time variables
+  if (str_detect(tolower(deparse(substitute(data))), "^ad")) {
+    is_dtm <- str_detect(varnames, "DT$") | str_detect(varnames, "DTM$") | str_detect(varnames, "TM$")
+
+    var_dtm <- varnames[is_dtm]
+
+    dtm_classes <- c("date", "posixct", "posixlt", "hms", "difftime")
+
+    dtm_class_valid <- purrr::map_lgl(data[var_dtm], ~ {
+      current_classes_lower <- tolower(class(.x))
+      any(current_classes_lower %in% dtm_classes)
+    })
+
+    varnames_dtm <- names(data[var_dtm])
+
+    chk_dtm_class <- varnames_dtm[!dtm_class_valid]
+
+    if (length(chk_dtm_class) > 0) {
+      err_cnd <- c(
+        err_cnd,
+        glue(
+          "{fmt_vars(chk_dtm_class)} do not have an R 'date', 'datetime' or 'time' class:",
+          "date, POSIXct/lt, hms or difftime."
+        )
+      )
+    }
+  }
+
+  err_cnd
 }
 
 #' Get Origin Object of a Series of Pipes
@@ -378,6 +418,7 @@ check_multiple_var_specs <- function(metadata,
 #' @noRd
 variable_max_length <- function(.df) {
   assert_data_frame(.df)
+  .df <- group_data_check(.df)
 
   variable_length <- getOption("xportr.length")
   variable_name <- getOption("xportr.variable_name")
@@ -400,16 +441,16 @@ variable_max_length <- function(.df) {
     }
   }
 
-  return(xport_max_length)
+  xport_max_length
 }
 
 #' Custom check for metadata object
 #'
 #' Improvement on the message clarity over the default assert(...) messages.
 #' @noRd
-#' @param metadata A data frame or `Metacore` object containing variable level
+#' @param metadata A data frame or `Metacore` object containing dataset or variable
+#'   level metadata.
 #' @inheritParams checkmate::check_logical
-#' metadata.
 check_metadata <- function(metadata, include_fun_message, null.ok = FALSE) { # nolint: object_name.
   if (is.null(metadata) && null.ok) {
     return(TRUE)
@@ -433,9 +474,9 @@ check_metadata <- function(metadata, include_fun_message, null.ok = FALSE) { # n
 
 #' Custom assertion for metadata object
 #' @noRd
-#' @param metadata A data frame or `Metacore` object containing variable level
+#' @param metadata A data frame or `Metacore` object containing dataset or variable
+#'   level metadata.
 #' @inheritParams checkmate::check_logical
-#' metadata.
 assert_metadata <- function(metadata,
                             include_fun_message = TRUE,
                             null.ok = FALSE, # nolint: object_name.
@@ -459,10 +500,10 @@ check_xpt_size <- function(path) {
   fs <- file.size(path)
 
   fs_string <- c(
-    "i" = paste0("xpt file size is: ", round(fs / 1e+9, 2)), " GB.",
+    "i" = paste0("xpt file size is: ", round(fs / 1e+9, 2), "GB."),
     "x" = paste0(
-      "XPT file sizes should not exceed 5G. It is",
-      " recommended you call `xportr_split` to split the file into smaller files."
+      "XPT file sizes should not exceed 5GB. It is",
+      " recommended you call `xportr_write` with `max_size_gb` set to 5 or less to split the file into smaller files."
     )
   )
 
@@ -471,4 +512,71 @@ check_xpt_size <- function(path) {
   }
 
   invisible(NULL)
+}
+
+#' Check for grouped tibbles and alert user
+#'
+#' Internal helper that detects whether `.df` is a grouped tibble
+#' (i.e., a `dplyr::grouped_df`). Grouped data frames can cause
+#' unexpected and inconsistent behavior in `xportr_*()` because many
+#' dplyr verbs operate differently when groups are present.
+#'
+#' This function checks for grouping and, depending on `verbose`,
+#' warns or messages the user that they should explicitly ungroup
+#' their data before continuing. It does *not* modify grouping; callers
+#' are responsible for calling `dplyr::ungroup()` if needed.
+#'
+#' @param .df A data.frame or tibble to be checked.
+#' @param verbose One of `"warn"`, `"message"`, `"quiet"`, `"none"`, or `"stop"`.
+#'   - If missing or `NULL` → treated as `"warn"`.
+#'   - `"warn"`: Emit a warning indicating the grouping variables.
+#'   - `"message"`: Emit a message instead of a warning.
+#'   - `"quiet"`: Emit no console output; log a warning if `log_warn()` exists.
+#'   - `"none"`: Treated as `"warn"` for grouped data.
+#'   - `"stop"`: Emit no console output; log a warning and return invisibly
+#'      (for upstream logic that may enforce strict failures).
+#'
+#' @return The same data frame `.df`, with grouping unchanged.
+#' @keywords internal
+#' @noRd
+group_data_check <- function(.df, verbose = NULL) {
+  # Structural validation (errors only)
+  checkmate::assert_data_frame(.df, .var.name = ".df")
+
+  # Normalize verbose to an "effective" value
+  if (missing(verbose) || is.null(verbose) || identical(verbose, "none")) {
+    effective_verbose <- "warn"
+  } else if (identical(verbose, "stop")) {
+    effective_verbose <- "stop"
+  } else {
+    # Allow only the standard console modes here
+    effective_verbose <- match.arg(verbose, choices = c("warn", "message", "quiet"))
+  }
+
+  if (dplyr::is_grouped_df(.df)) {
+    grp_txt <- paste(dplyr::group_vars(.df), collapse = ", ")
+    msg <- sprintf(
+      paste(
+        "Input data is grouped by: %s.",
+        "xportr functions expect ungrouped data.",
+        "If you continue without calling `dplyr::ungroup()`,",
+        "results may be inconsistent or unexpected."
+      ),
+      grp_txt
+    )
+
+    if (effective_verbose == "warn") {
+      warning(msg, call. = FALSE)
+    } else if (effective_verbose == "message") {
+      message(msg)
+    } else if (effective_verbose %in% c("quiet", "stop")) {
+      # QUIET / STOP: silent to console, but log if possible
+      if (exists("log_warn", mode = "function", inherits = TRUE)) {
+        log_warn(msg)
+      }
+      return(invisible(.df))
+    }
+  }
+
+  .df
 }

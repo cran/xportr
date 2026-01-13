@@ -1,3 +1,29 @@
+# xportr 0.5.0
+
+## New Features
+* Added internal `group_data_check()` function to check and warn users of data grouping in their data when using xportr functions. (#270) (#297)
+* Added a check in `xpt_validate()` to verify the class of date, datetime, and
+time variables. (#298)
+* Added check to `xportr_label()`, `xportr_length()`, and `xportr_order()` to alert users when metadata contains variables that are not present in the dataset (#284)
+
+## Bug Fixes
+* Fixed verbose option bugs in `xportr_format()` and added missing `xportr.order_verbose` option (#318)
+* Fixed `xportr_format()` to exclude variables ending with `ELTM` from the date/time format check, as these indicate time relative to an anchor time in SDTM or ADaM (#293)
+
+## Breaking Changes and Deprecation
+
+* The deprecated `metacore` argument has been removed from `xportr_type()`, `xportr_label()`, `xportr_length()`, `xportr_order()`, `xportr_df_label()`, and `xportr_format()` functions. Use the `metadata` argument instead. (#317)
+* The deprecated `label` argument has been removed from `xportr_write()`. Use the `metadata` argument instead. (#317)
+
+## Documentation
+
+## Miscellaneous
+
+* Standardized function calls by centralizing imports in R/xportr-package.R, replacing inconsistent use of package::function() syntax.
+(see [Conventions in xportr](https://github.com/atorus-research/xportr/wiki/Conventions-in-xportr)). (#204)
+
+* Updated warning when trying to write and file size exceeds 5GB (#288)
+
 # xportr 0.4.3
 
 * Fix breaking changes in metacore. (#290)

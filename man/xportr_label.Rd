@@ -4,18 +4,12 @@
 \alias{xportr_label}
 \title{Assign Variable Label}
 \usage{
-xportr_label(
-  .df,
-  metadata = NULL,
-  domain = NULL,
-  verbose = NULL,
-  metacore = deprecated()
-)
+xportr_label(.df, metadata = NULL, domain = NULL, verbose = NULL)
 }
 \arguments{
 \item{.df}{A data frame of CDISC standard.}
 
-\item{metadata}{A data frame containing variable level metadata. See
+\item{metadata}{A metacore object or a data frame containing variable level metadata. See
 'Metadata' section for details.}
 
 \item{domain}{Appropriate CDISC dataset name, e.g. ADAE, DM. Used to subset
@@ -24,9 +18,6 @@ the metadata object.}
 \item{verbose}{The action this function takes when an action is taken on the
 dataset or function validation finds an issue. See 'Messaging' section for
 details. Options are 'stop', 'warn', 'message', and 'none'}
-
-\item{metacore}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Previously used to pass
-metadata now renamed with \code{metadata}}
 }
 \value{
 Data frame with label attributes for each variable.
@@ -39,15 +30,20 @@ variable it will be assigned an empty character value. Labels are stored in
 the 'label' attribute of the column.
 }
 \section{Messaging}{
- \code{label_log()} is the primary messaging tool for
-\code{xportr_label()}. If there are any columns present in the '.df' that are not
-noted in the metadata, they cannot be assigned a label and a message will
-be generated noting the number or variables that have not been assigned a
-label.
+ If there are any columns present in the '.df' that are not
+noted in the metadata, they are assigned an empty string as a label and a message
+will be generated noting the number of those variables.
 
-If variables were not found in the metadata and the value passed to the
-'verbose' argument is 'stop', 'warn', or 'message', a message will be
-generated detailing the variables that were missing in metadata.
+If there are variables in the metadata that don't exist in '.df',
+they will be skipped and a message will be generated noting the number of metadata
+variables skipped.
+
+In both cases, if the value passed to the 'verbose' argument is 'stop', 'warn',
+or 'message', a complete list of the affected variables will be provided.
+
+Additionally, if a variable label is longer than 40 characters, a complete
+list of those variables will be provided as a warning, regardless of the value
+of the 'verbose' argument.
 }
 
 \section{Metadata}{
@@ -65,7 +61,7 @@ Default: "variable". This is used to match columns in '.df' argument and
 the metadata.
 \item Variable Label - passed as the 'xportr.label' option.
 Default: "label". These character values to update the 'label' attribute of
-the column. This is passed to \code{haven::write} to note the label.
+the column. This is passed to \code{haven::write_xpt} to note the label.
 }
 }
 

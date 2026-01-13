@@ -8,15 +8,20 @@
 #'
 #' @inheritParams xportr_length
 #'
-#' @section Messaging: `label_log()` is the primary messaging tool for
-#'   `xportr_label()`. If there are any columns present in the '.df' that are not
-#'   noted in the metadata, they cannot be assigned a label and a message will
-#'   be generated noting the number or variables that have not been assigned a
-#'   label.
+#' @section Messaging: If there are any columns present in the '.df' that are not
+#'   noted in the metadata, they are assigned an empty string as a label and a message
+#'   will be generated noting the number of those variables.
 #'
-#'   If variables were not found in the metadata and the value passed to the
-#'   'verbose' argument is 'stop', 'warn', or 'message', a message will be
-#'   generated detailing the variables that were missing in metadata.
+#'   If there are variables in the metadata that don't exist in '.df',
+#'   they will be skipped and a message will be generated noting the number of metadata
+#'   variables skipped.
+#'
+#'   In both cases, if the value passed to the 'verbose' argument is 'stop', 'warn',
+#'   or 'message', a complete list of the affected variables will be provided.
+#'
+#'   Additionally, if a variable label is longer than 40 characters, a complete
+#'   list of those variables will be provided as a warning, regardless of the value
+#'   of the 'verbose' argument.
 #'
 #' @section Metadata: The argument passed in the 'metadata' argument can either
 #'   be a metacore object, or a data.frame containing the data listed below. If
@@ -34,7 +39,7 @@
 #'
 #'   3) Variable Label - passed as the 'xportr.label' option.
 #'   Default: "label". These character values to update the 'label' attribute of
-#'   the column. This is passed to `haven::write` to note the label.
+#'   the column. This is passed to `haven::write_xpt` to note the label.
 #'
 #'
 #' @return Data frame with label attributes for each variable.
@@ -59,16 +64,7 @@
 xportr_label <- function(.df,
                          metadata = NULL,
                          domain = NULL,
-                         verbose = NULL,
-                         metacore = deprecated()) {
-  if (!missing(metacore)) {
-    lifecycle::deprecate_stop(
-      when = "0.3.1.9005",
-      what = "xportr_label(metacore = )",
-      with = "xportr_label(metadata = )"
-    )
-  }
-
+                         verbose = NULL) {
   ## Common section to detect default arguments
 
   domain <- domain %||% attr(.df, "_xportr.df_arg_")
@@ -84,10 +80,12 @@ xportr_label <- function(.df,
 
   ## End of common section
 
+
   assert_data_frame(.df)
   assert_string(domain, null.ok = TRUE)
   assert_metadata(metadata)
   assert_choice(verbose, choices = .internal_verbose_choices)
+  .df <- group_data_check(.df, verbose = verbose)
 
   domain_name <- getOption("xportr.domain_name")
   variable_name <- getOption("xportr.variable_name")
@@ -100,7 +98,7 @@ xportr_label <- function(.df,
     if (!domain %in% metadata[[domain_name]]) log_no_domain(domain, domain_name, verbose)
 
     metadata <- metadata %>%
-      dplyr::filter(!!sym(domain_name) == .env$domain)
+      filter(!!sym(domain_name) == .env$domain)
   } else {
     # Common check for multiple variables name
     check_multiple_var_specs(metadata, variable_name)
@@ -111,6 +109,11 @@ xportr_label <- function(.df,
   miss_vars <- setdiff(names(.df), metadata[[variable_name]])
 
   label_log(miss_vars, verbose)
+
+  # Check any variables missed in input data but present in metadata ---
+  miss_meta_vars <- setdiff(metadata[[variable_name]], names(.df))
+
+  metadata_vars_log(miss_meta_vars, verbose)
 
   label <- metadata[[variable_label]]
   names(label) <- metadata[[variable_name]]

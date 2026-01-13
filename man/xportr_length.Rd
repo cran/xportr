@@ -9,14 +9,13 @@ xportr_length(
   metadata = NULL,
   domain = NULL,
   verbose = NULL,
-  length_source = c("metadata", "data"),
-  metacore = deprecated()
+  length_source = c("metadata", "data")
 )
 }
 \arguments{
 \item{.df}{A data frame of CDISC standard.}
 
-\item{metadata}{A data frame containing variable level metadata. See
+\item{metadata}{A metacore object or a data frame containing variable level metadata. See
 'Metadata' section for details.}
 
 \item{domain}{Appropriate CDISC dataset name, e.g. ADAE, DM. Used to subset
@@ -32,9 +31,6 @@ If \code{"metadata"} is specified, the assigned length is from the metadata leng
 If \code{"data"} is specified, the assigned length is determined by the calculated maximum data length.
 
 \emph{Permitted Values}: \code{"metadata"}, \code{"data"}}
-
-\item{metacore}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Previously used to pass
-metadata now renamed with \code{metadata}}
 }
 \value{
 Data frame with SAS default length attributes for each variable.
@@ -46,20 +42,23 @@ a variable the length value is set to maximum data length for character columns,
 for non-character columns. This value is stored in the 'width' attribute of the column.
 }
 \section{Messaging}{
- \code{length_log} is the primary messaging tool for
-\code{xportr_length}. If there are any columns present in the '.df' that are not
-noted in the metadata, they cannot be assigned a length and a message will
-be generated noting the number or variables that have not been assigned a
-length.
+ If there are any columns present in the '.df' that are not
+noted in the metadata, or any variables in metadata that have missing length
+values, their length is set to maximum data length for character columns, and
+8 for non-character columns. A message will be generated noting the number
+of those variables.
 
-If variables were not found in the metadata and the value passed to the
-'verbose' argument is 'stop', 'warn', or 'message', a message will be
-generated detailing the variables that were missing in the metadata.
+If there are variables in the metadata that don't exist in '.df', they will
+be skipped and a message will be generated noting the number of metadata variables
+skipped.
+
+In both cases, if the value passed to the 'verbose' argument is 'stop', 'warn',
+or 'message', a complete list of the affected variables will be provided.
 }
 
 \section{Metadata}{
  The argument passed in the 'metadata' argument can either
-be a \code{{metacore}} object, or a data.frame containing the data listed below. If
+be a metacore object, or a data.frame containing the data listed below. If
 metacore is used, no changes to options are required.
 
 For data.frame 'metadata' arguments three columns must be present:
@@ -72,7 +71,7 @@ Default: "variable". This is used to match columns in '.df' argument and
 the metadata.
 \item Variable Label - passed as the 'xportr.length' option.
 Default: "length". These numeric values to update the 'width' attribute of
-the column. This is passed to \code{haven::write} to note the variable length.
+the column. This is passed to \code{haven::write_xpt} to note the variable length.
 }
 }
 

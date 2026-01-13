@@ -61,7 +61,7 @@
 #' )
 #'
 #' .df <- data.frame(
-#'   Subj = as.character(123, 456, 789),
+#'   Subj = as.character(c(123, 456, 789)),
 #'   Different = c("a", "b", "c"),
 #'   Val = c("1", "2", "3"),
 #'   Param = c("param1", "param2", "param3")
@@ -71,16 +71,7 @@
 xportr_type <- function(.df,
                         metadata = NULL,
                         domain = NULL,
-                        verbose = NULL,
-                        metacore = deprecated()) {
-  if (!missing(metacore)) {
-    lifecycle::deprecate_stop(
-      when = "0.3.1.9005",
-      what = "xportr_type(metacore = )",
-      with = "xportr_type(metadata = )"
-    )
-  }
-
+                        verbose = NULL) {
   ## Common section to detect default arguments
 
   domain <- domain %||% attr(.df, "_xportr.df_arg_")
@@ -100,6 +91,7 @@ xportr_type <- function(.df,
   assert_string(domain, null.ok = TRUE)
   assert_metadata(metadata)
   assert_choice(verbose, choices = .internal_verbose_choices)
+  .df <- group_data_check(.df, verbose = verbose)
 
   # Name of the columns for working with metadata
   domain_name <- getOption("xportr.domain_name")

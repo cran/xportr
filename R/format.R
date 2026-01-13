@@ -16,9 +16,9 @@
 #'  producing a warning, or 'message' producing a message. A value of 'none'
 #'  will not output any messages.
 #'
-#' 1) If the variable has a suffix of `DT`, `DTM`, `TM` (indicating a
-#'  numeric date/time variable) then a message will be shown if there is
-#'   no format associated with it.
+#' 1) If the variable has a suffix of `DT`, `DTM`, or `TM` excluding `ELTM`
+#'  (indicating a numeric date/time variable) , then a message will be shown
+#'  if there is no format associated with it.
 #'
 #' 2) If a variable is character then a message will be shown if there is
 #'  no `$` prefix in the associated format.
@@ -78,7 +78,7 @@
 #'
 #'   2) Format Name - passed as the 'xportr.format_name' option. Default:
 #'   "format". Character values to update the '`format.sas`' attribute of the
-#'   column. This is passed to `haven::write` to note the format.
+#'   column. This is passed to `haven::write_xpt` to note the format.
 #'
 #'   3) Variable Name - passed as the 'xportr.variable_name' option. Default:
 #'   "variable". This is used to match columns in '.df' argument and the
@@ -102,16 +102,7 @@
 xportr_format <- function(.df,
                           metadata = NULL,
                           domain = NULL,
-                          verbose = NULL,
-                          metacore = deprecated()) {
-  if (!missing(metacore)) {
-    lifecycle::deprecate_stop(
-      when = "0.3.1.9005",
-      what = "xportr_format(metacore = )",
-      with = "xportr_format(metadata = )"
-    )
-  }
-
+                          verbose = NULL) {
   ## Common section to detect default arguments
 
   domain <- domain %||% attr(.df, "_xportr.df_arg_")
@@ -123,7 +114,7 @@ xportr_format <- function(.df,
   # metadata, and finally fall back to the option value
   verbose <- verbose %||%
     attr(.df, "_xportr.df_verbose_") %||%
-    getOption("xportr.length_verbose", "none")
+    getOption("xportr.format_verbose", "none")
 
   ## End of common section
 
@@ -131,6 +122,7 @@ xportr_format <- function(.df,
   assert_string(domain, null.ok = TRUE)
   assert_metadata(metadata)
   assert_choice(verbose, choices = .internal_verbose_choices)
+  .df <- group_data_check(.df, verbose = verbose)
 
   domain_name <- getOption("xportr.domain_name")
   format_name <- getOption("xportr.format_name")
@@ -182,7 +174,7 @@ check_formats <- function(.df, format, verbose) {
 
     # check that any variables ending DT, DTM, TM have a format
     if (identical(format_sas, "")) {
-      if (isTRUE(grepl("(DT|DTM|TM)$", colnames(.df)[i]))) {
+      if (isTRUE(grepl("(DT|DTM|TM)$", colnames(.df)[i])) && !grepl("ELTM$", colnames(.df)[i])) {
         message <- glue(
           "(xportr::xportr_format) {encode_vars(colnames(.df)[i])} is expected to have a format but does not."
         )

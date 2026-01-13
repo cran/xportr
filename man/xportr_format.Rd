@@ -4,18 +4,12 @@
 \alias{xportr_format}
 \title{Assign SAS Format}
 \usage{
-xportr_format(
-  .df,
-  metadata = NULL,
-  domain = NULL,
-  verbose = NULL,
-  metacore = deprecated()
-)
+xportr_format(.df, metadata = NULL, domain = NULL, verbose = NULL)
 }
 \arguments{
 \item{.df}{A data frame of CDISC standard.}
 
-\item{metadata}{A data frame containing variable level metadata. See
+\item{metadata}{A metacore object or a data frame containing variable level metadata. See
 'Metadata' section for details.}
 
 \item{domain}{Appropriate CDISC dataset name, e.g. ADAE, DM. Used to subset
@@ -24,9 +18,6 @@ the metadata object.}
 \item{verbose}{The action this function takes when an action is taken on the
 dataset or function validation finds an issue. See 'Messaging' section for
 details. Options are 'stop', 'warn', 'message', and 'none'}
-
-\item{metacore}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Previously used to pass
-metadata now renamed with \code{metadata}}
 }
 \value{
 Data frame with \code{SASformat} attributes for each variable.
@@ -45,9 +36,9 @@ passed to the \code{verbose} argument: with 'stop' producing an error, 'warn'
 producing a warning, or 'message' producing a message. A value of 'none'
 will not output any messages.
 \enumerate{
-\item If the variable has a suffix of \code{DT}, \code{DTM}, \code{TM} (indicating a
-numeric date/time variable) then a message will be shown if there is
-no format associated with it.
+\item If the variable has a suffix of \code{DT}, \code{DTM}, or \code{TM} excluding \code{ELTM}
+(indicating a numeric date/time variable) , then a message will be shown
+if there is no format associated with it.
 \item If a variable is character then a message will be shown if there is
 no \code{$} prefix in the associated format.
 \item If a variable is character then a message will be shown if the
@@ -103,7 +94,7 @@ For data.frame 'metadata' arguments three columns must be present:
 function.
 \item Format Name - passed as the 'xportr.format_name' option. Default:
 "format". Character values to update the '\code{format.sas}' attribute of the
-column. This is passed to \code{haven::write} to note the format.
+column. This is passed to \code{haven::write_xpt} to note the format.
 \item Variable Name - passed as the 'xportr.variable_name' option. Default:
 "variable". This is used to match columns in '.df' argument and the
 metadata.

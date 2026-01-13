@@ -64,7 +64,7 @@ test_that("type Test 2: Variable types are coerced as expected and can raise mes
     Val = "numeric", Param = "character"
   ))
 
-  expect_error(xportr_type(df, meta_example, verbose = "stop", domain = "df"))
+  expect_error(suppressMessages(xportr_type(df, meta_example, verbose = "stop", domain = "df")))
 
   (df3 <- suppressMessages(xportr_type(df, meta_example, verbose = "warn", domain = "df"))) %>%
     expect_warning()
@@ -183,7 +183,7 @@ test_that("type Test 7: xportr_type: date variables are not converted to numeric
   skip_if_not_installed("metacore")
 
   df <- data.frame(RFICDT = as.Date("2017-03-30"), RFICDTM = as.POSIXct("2017-03-30"))
-  metacore_meta <- suppressWarnings(
+  metacore_meta <- suppressMessages(suppressWarnings(
     metacore::metacore(
       var_spec = data.frame(
         variable = c("RFICDT", "RFICDTM"),
@@ -194,7 +194,7 @@ test_that("type Test 7: xportr_type: date variables are not converted to numeric
         format = c("date9.", "datetime20.")
       )
     )
-  )
+  ))
   expect_message(
     {
       processed_df <- xportr_type(df, metacore_meta, domain = "df")
@@ -267,7 +267,7 @@ test_that("type Test 9: xportr_type: Drops factor levels", {
     Param = c("param1", "param2", "param3")
   )
 
-  df2 <- xportr_type(.df, metadata, "test")
+  df2 <- suppressMessages(xportr_type(.df, metadata, "test"))
 
   expect_null(attributes(df2$Val))
 })
@@ -344,4 +344,172 @@ test_that("type Test 12: xportr_options() overrides work properly", {
   )
 
   options(op)
+})
+
+test_that("xportr_type() applies types / type.sas correctly on ungrouped data", {
+  skip_if_not_installed("dplyr")
+
+  adsl <- data.frame(
+    USUBJID = c("1001", "1002", "1003"),
+    AGE = c(63, 35, 27),
+    stringsAsFactors = FALSE
+  )
+
+  metadata <- data.frame(
+    dataset = c("ADSL", "ADSL"),
+    variable = c("USUBJID", "AGE"),
+    type = c("character", "numeric"),
+    stringsAsFactors = FALSE
+  )
+
+  expect_silent(
+    out <- xportr_type(adsl, metadata = metadata, domain = "ADSL", verbose = "none")
+  )
+
+  expect_identical(nrow(out), nrow(adsl))
+  expect_false(dplyr::is_grouped_df(out))
+
+  # At a minimum, classes/type attributes should be consistent
+  expect_true(is.character(out$USUBJID))
+  expect_true(is.numeric(out$AGE))
+})
+
+test_that("xportr_type() warns and preserves grouping when verbose = 'warn'", {
+  skip_if_not_installed("dplyr")
+
+  adsl <- data.frame(
+    USUBJID = c("1001", "1002", "1003"),
+    AGE = c(63, 35, 27),
+    stringsAsFactors = FALSE
+  )
+
+  metadata <- data.frame(
+    dataset = c("ADSL", "ADSL"),
+    variable = c("USUBJID", "AGE"),
+    type = c("character", "numeric"),
+    stringsAsFactors = FALSE
+  )
+
+  grouped <- dplyr::group_by(adsl, USUBJID)
+
+  expect_true(dplyr::is_grouped_df(grouped))
+
+  expect_warning(
+    out <- xportr_type(grouped, metadata = metadata, domain = "ADSL", verbose = "warn"),
+    "Input data is grouped by:",
+    fixed = FALSE
+  )
+
+  # Grouping preserved; types applied
+  expect_true(dplyr::is_grouped_df(out))
+  expect_true(is.character(out$USUBJID))
+  expect_true(is.numeric(out$AGE))
+})
+
+test_that("xportr_type() messages and preserves grouping when verbose = 'message'", {
+  skip_if_not_installed("dplyr")
+
+  adsl <- data.frame(
+    USUBJID = c("1001", "1002", "1003"),
+    AGE = c(63, 35, 27),
+    stringsAsFactors = FALSE
+  )
+
+  metadata <- data.frame(
+    dataset = c("ADSL", "ADSL"),
+    variable = c("USUBJID", "AGE"),
+    type = c("character", "numeric"),
+    stringsAsFactors = FALSE
+  )
+
+  grouped <- dplyr::group_by(adsl, USUBJID)
+
+  expect_message(
+    out <- xportr_type(grouped, metadata = metadata, domain = "ADSL", verbose = "message"),
+    "Input data is grouped by:",
+    fixed = FALSE
+  )
+
+  expect_true(dplyr::is_grouped_df(out))
+  expect_true(is.character(out$USUBJID))
+  expect_true(is.numeric(out$AGE))
+})
+
+test_that("xportr_type() treats NULL and 'none' as 'warn' for grouped data", {
+  skip_if_not_installed("dplyr")
+
+  adsl <- data.frame(
+    USUBJID = c("1001", "1002", "1003"),
+    AGE = c(63, 35, 27),
+    stringsAsFactors = FALSE
+  )
+
+  metadata <- data.frame(
+    dataset = c("ADSL", "ADSL"),
+    variable = c("USUBJID", "AGE"),
+    type = c("character", "numeric"),
+    stringsAsFactors = FALSE
+  )
+
+  grouped1 <- dplyr::group_by(adsl, USUBJID)
+  grouped2 <- dplyr::group_by(adsl, USUBJID)
+
+  expect_warning(
+    out_null <- xportr_type(grouped1, metadata = metadata, domain = "ADSL", verbose = NULL),
+    "Input data is grouped by:",
+    fixed = FALSE
+  )
+  expect_true(dplyr::is_grouped_df(out_null))
+  expect_true(is.character(out_null$USUBJID))
+  expect_true(is.numeric(out_null$AGE))
+
+  expect_warning(
+    out_none <- xportr_type(grouped2, metadata = metadata, domain = "ADSL", verbose = "none"),
+    "Input data is grouped by:",
+    fixed = FALSE
+  )
+  expect_true(dplyr::is_grouped_df(out_none))
+  expect_true(is.character(out_none$USUBJID))
+  expect_true(is.numeric(out_none$AGE))
+})
+
+test_that("xportr_type() leaves ungrouped data unchanged structurally and silent", {
+  adsl <- data.frame(
+    USUBJID = c("1001", "1002", "1003"),
+    AGE = c(63, 35, 27),
+    stringsAsFactors = FALSE
+  )
+
+  metadata <- data.frame(
+    dataset = c("ADSL", "ADSL"),
+    variable = c("USUBJID", "AGE"),
+    type = c("character", "numeric"),
+    stringsAsFactors = FALSE
+  )
+
+  logged <- character(0)
+  log_warn <- function(msg) {
+    logged <<- c(logged, msg)
+  }
+
+  expect_silent(
+    out <- xportr_type(adsl, metadata = metadata, domain = "ADSL", verbose = "warn")
+  )
+
+  expect_false(dplyr::is_grouped_df(out))
+  expect_identical(nrow(out), nrow(adsl))
+  expect_length(logged, 0)
+})
+
+test_that("xportr_type() errors on non-data-frame input (via group_data_check)", {
+  metadata <- data.frame(
+    dataset = "ADSL",
+    variable = "AGE",
+    type = "numeric",
+    stringsAsFactors = FALSE
+  )
+
+  expect_error(
+    xportr_type(1:5, metadata = metadata, domain = "ADSL", verbose = "warn")
+  )
 })

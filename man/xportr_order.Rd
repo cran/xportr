@@ -4,18 +4,12 @@
 \alias{xportr_order}
 \title{Order variables of a dataset according to Spec}
 \usage{
-xportr_order(
-  .df,
-  metadata = NULL,
-  domain = NULL,
-  verbose = NULL,
-  metacore = deprecated()
-)
+xportr_order(.df, metadata = NULL, domain = NULL, verbose = NULL)
 }
 \arguments{
 \item{.df}{A data frame of CDISC standard.}
 
-\item{metadata}{A data frame containing variable level metadata. See
+\item{metadata}{A metacore object or a data frame containing variable level metadata. See
 'Metadata' section for details.}
 
 \item{domain}{Appropriate CDISC dataset name, e.g. ADAE, DM. Used to subset
@@ -24,9 +18,6 @@ the metadata object.}
 \item{verbose}{The action this function takes when an action is taken on the
 dataset or function validation finds an issue. See 'Messaging' section for
 details. Options are 'stop', 'warn', 'message', and 'none'}
-
-\item{metacore}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Previously used to pass
-metadata now renamed with \code{metadata}}
 }
 \value{
 Dataframe that has been re-ordered according to spec
@@ -37,20 +28,24 @@ Any variables that are missing an order value are appended to the end of the dat
 after all of the variables that have an order.
 }
 \section{Messaging}{
- \code{var_ord_msg()} is the primary messaging tool for
-\code{xportr_order()}. There are two primary messages that are output from
-\code{var_ord_msg()}. The first is the "moved" variables. These are the variables
-that were not found in the metadata file and moved to the end of the
-dataset. A message will be generated noting the number, if any, of
-variables that were moved to the end of the dataset. If any variables were
-moved, and the 'verbose' argument is 'stop', 'warn', or 'message', a
-message will be generated detailing the variables that were moved.
+ There are three primary messages output by \code{xportr_order()}.
 
-The second primary message is the number of variables that were in the
-dataset, but not in the correct order. A message will be generated noting
-the number, if any, of variables that have been reordered. If any variables
-were reordered, and the 'verbose' argument is 'stop', 'warn', or 'message',
-a message will be generated detailing the variables that were reordered.
+The first identifies the "moved" variables. These are the variables that were
+either not found in the metadata file or had missing order values, and therefore
+moved to the end of the dataset. A message will be generated noting the number,
+if any, of variables that were moved to the end of the dataset.
+
+The second message identifies the "reordered" variables. These are the variables
+that were in the dataset, but not in the correct order. A message will be generated
+noting the number, if any, of variables that have been reordered.
+
+The third message identifies the "skipped" metadata variables. These are the
+metadata variables missing from the dataset and therefore skipped from processing.
+A message will be generated noting the number, if any, of metadata variables
+that have been skipped.
+
+In all three cases, if the value passed to the \code{verbose} argument is \code{stop},
+\code{warn}, or \code{message}, a complete list of the affected variables will be provided.
 }
 
 \section{Metadata}{

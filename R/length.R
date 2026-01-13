@@ -6,7 +6,7 @@
 #' for non-character columns. This value is stored in the 'width' attribute of the column.
 #'
 #' @inheritParams xportr
-#' @param metadata A data frame containing variable level metadata. See
+#' @param metadata A metacore object or a data frame containing variable level metadata. See
 #'   'Metadata' section for details.
 #' @param length_source Choose the assigned length from either metadata or data.
 #'
@@ -14,21 +14,22 @@
 #'   If `"data"` is specified, the assigned length is determined by the calculated maximum data length.
 #'
 #'   *Permitted Values*: `"metadata"`, `"data"`
-#' @param metacore `r lifecycle::badge("deprecated")` Previously used to pass
-#'   metadata now renamed with `metadata`
 #'
-#' @section Messaging: `length_log` is the primary messaging tool for
-#'   `xportr_length`. If there are any columns present in the '.df' that are not
-#'   noted in the metadata, they cannot be assigned a length and a message will
-#'   be generated noting the number or variables that have not been assigned a
-#'   length.
+#' @section Messaging: If there are any columns present in the '.df' that are not
+#'   noted in the metadata, or any variables in metadata that have missing length
+#'   values, their length is set to maximum data length for character columns, and
+#'   8 for non-character columns. A message will be generated noting the number
+#'   of those variables.
 #'
-#'   If variables were not found in the metadata and the value passed to the
-#'   'verbose' argument is 'stop', 'warn', or 'message', a message will be
-#'   generated detailing the variables that were missing in the metadata.
+#'   If there are variables in the metadata that don't exist in '.df', they will
+#'   be skipped and a message will be generated noting the number of metadata variables
+#'   skipped.
+#'
+#'   In both cases, if the value passed to the 'verbose' argument is 'stop', 'warn',
+#'   or 'message', a complete list of the affected variables will be provided.
 #'
 #' @section Metadata: The argument passed in the 'metadata' argument can either
-#'   be a `{metacore}` object, or a data.frame containing the data listed below. If
+#'   be a metacore object, or a data.frame containing the data listed below. If
 #'   metacore is used, no changes to options are required.
 #'
 #'   For data.frame 'metadata' arguments three columns must be present:
@@ -43,7 +44,7 @@
 #'
 #'   3) Variable Label - passed as the 'xportr.length' option.
 #'   Default: "length". These numeric values to update the 'width' attribute of
-#'   the column. This is passed to `haven::write` to note the variable length.
+#'   the column. This is passed to `haven::write_xpt` to note the variable length.
 #'
 #'
 #' @return Data frame with SAS default length attributes for each variable.
@@ -67,16 +68,8 @@ xportr_length <- function(.df,
                           metadata = NULL,
                           domain = NULL,
                           verbose = NULL,
-                          length_source = c("metadata", "data"),
-                          metacore = deprecated()) {
+                          length_source = c("metadata", "data")) {
   length_source <- match.arg(length_source)
-  if (!missing(metacore)) {
-    lifecycle::deprecate_stop(
-      when = "0.3.1.9005",
-      what = "xportr_length(metacore = )",
-      with = "xportr_length(metadata = )"
-    )
-  }
 
   ## Common section to detect default arguments
 
@@ -90,13 +83,13 @@ xportr_length <- function(.df,
   verbose <- verbose %||%
     attr(.df, "_xportr.df_verbose_") %||%
     getOption("xportr.length_verbose", "none")
-
   ## End of common section
 
   assert_data_frame(.df)
   assert_string(domain, null.ok = TRUE)
   assert_metadata(metadata)
   assert_choice(verbose, choices = .internal_verbose_choices)
+  .df <- group_data_check(.df, verbose = verbose)
 
   domain_name <- getOption("xportr.domain_name")
   variable_length <- getOption("xportr.length")
@@ -123,6 +116,9 @@ xportr_length <- function(.df,
 
   # Check any variables missed in metadata but present in input data ---
   miss_vars <- setdiff(names(.df), metadata[[variable_name]])
+
+  # Check any variables missed in input data but present in metadata ---
+  miss_meta_vars <- setdiff(metadata[[variable_name]], names(.df))
 
   miss_length <- character(0L)
   width_attr <- if (identical(length_source, "metadata")) {
@@ -166,6 +162,9 @@ xportr_length <- function(.df,
 
   # Message for missing var and missing length
   length_log(miss_vars, miss_length, verbose)
+
+  # Message for missing meta var
+  metadata_vars_log(miss_meta_vars, verbose)
 
   .df
 }

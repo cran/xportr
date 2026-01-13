@@ -69,6 +69,10 @@ xportr.type_verbose - The default argument for the 'verbose' argument for
 \code{xportr_type}. Default: \code{"none"}
 }
 \item{
+xportr.order_verbose - The default argument for the 'verbose' argument for
+\code{xportr_order}. Default: \code{"none"}
+}
+\item{
 xportr.character_types - The default character vector used to explicitly
 coerce R classes to character XPT types. Default: \code{"character"}
 }
@@ -127,6 +131,7 @@ Authors:
   \item Kangjie Zhang
   \item Adrian Chan
   \item Sadchla Mascary
+  \item Seunghyun Kim
 }
 
 Other contributors:
