@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>You got options</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">You got options</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#youve-got-options-or-xportr_options" id="toc-youve-got-options-or-xportr_options">You’ve got
+<code>options()</code> or <code>xportr_options()</code></a></li>
+<li><a href="#are-we-being-too-verbose" id="toc-are-we-being-too-verbose">Are we being too verbose?</a></li>
+<li><a href="#type-coercion-options" id="toc-type-coercion-options">Type
+coercion options</a></li>
+<li><a href="#putting-it-all-together" id="toc-putting-it-all-together">Putting it all together</a></li>
+</ul>
+</div>
+
+<style type="text/css">
+
+.text-left {
+text-align: left;
+}
+</style>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Before we dive into the <code>{xportr}</code> functions, we want to
+point out some quality of life utilities to make your <code>xpt</code>
+generation life a little bit easier.</p>
+<ul>
+<li><code>options()</code></li>
+<li><code>xportr_options()</code></li>
+</ul>
+<p><strong>NOTE:</strong> As long as you have a well-defined
+<em>metadata object</em> you do NOT need to use <code>options()</code>
+or <code>xportr_options()</code>, but we find these handy to use and
+think they deserve a quick mention!</p>
+<p>R has a built-in mechanism for storing global settings called
+<code>options()</code>. You set them with <code>options()</code> and
+retrieve a single value with <code>getOption()</code>. Options live for
+the duration of your R session - once set, any function that reads that
+option will pick up the new value without you having to pass it as an
+argument every time. All <code>{xportr}</code> options are prefixed with
+<code>xportr.</code> to avoid clashing with options from other
+packages.</p>
+<p>We will also explore the following in this vignette:</p>
+<ul>
+<li>You’ve got <code>options()</code> or <code>xportr_options()</code> —
+column name mapping</li>
+<li>Are we being too verbose? — verbose messaging defaults</li>
+<li>Type coercion options</li>
+<li>Putting it all together</li>
+</ul>
+</div>
+<div id="youve-got-options-or-xportr_options" class="section level1">
+<h1>You’ve got <code>options()</code> or
+<code>xportr_options()</code></h1>
+<p><code>{xportr}</code> is built with certain assumptions around
+specification column names and information in those columns. We have
+found that each company specification file can differ slightly from our
+assumptions. For example, one company might call a column
+<code>Variables</code>, another <code>Variable</code> and another
+<code>variables</code>. Rather than trying to regex ourselves out of
+this situation, we have introduced <code>options()</code>.</p>
+<p>Additionally, we have a helper function
+<code>xportr_options()</code>, which works just like
+<code>options()</code> but it can also be used to get the current state
+of all <code>{xportr}</code> options — we will use this at the end of
+the vignette.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(xportr)</span></code></pre></div>
+<p>Let’s look at our example specification file column names available
+in this package. We can see that all the columns start with an upper
+case letter and have spaces in several of them. We could convert all the
+column names to lower case and deal with the spacing using some
+<code>{dplyr}</code> functions or base R, or we could just use
+<code>options()</code>!</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;adsl_xportr&quot;</span>, <span class="st">&quot;var_spec&quot;</span>, <span class="st">&quot;dataset_spec&quot;</span>, <span class="at">package =</span> <span class="st">&quot;xportr&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">colnames</span>(var_spec)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>   [<span class="dv">1</span>] <span class="st">&quot;Order&quot;</span>              <span class="st">&quot;Dataset&quot;</span>            <span class="st">&quot;Variable&quot;</span>          </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>   [<span class="dv">4</span>] <span class="st">&quot;Label&quot;</span>              <span class="st">&quot;Data Type&quot;</span>          <span class="st">&quot;Length&quot;</span>            </span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>   [<span class="dv">7</span>] <span class="st">&quot;Significant Digits&quot;</span> <span class="st">&quot;Format&quot;</span>             <span class="st">&quot;Mandatory&quot;</span>         </span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  [<span class="dv">10</span>] <span class="st">&quot;Assigned Value&quot;</span>     <span class="st">&quot;Codelist&quot;</span>           <span class="st">&quot;Common&quot;</span>            </span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  [<span class="dv">13</span>] <span class="st">&quot;Origin&quot;</span>             <span class="st">&quot;Pages&quot;</span>              <span class="st">&quot;Method&quot;</span>            </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  [<span class="dv">16</span>] <span class="st">&quot;Predecessor&quot;</span>        <span class="st">&quot;Role&quot;</span>               <span class="st">&quot;Comment&quot;</span>           </span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  [<span class="dv">19</span>] <span class="st">&quot;Developer Notes&quot;</span></span></code></pre></div>
+<p>By using <code>options()</code> or <code>xportr_options()</code> at
+the beginning of our script we can tell <code>{xportr}</code> what the
+valid names are (see chunk below). Please note that before we set the
+options the package assumed everything was in lowercase and there were
+no spaces in the names. After running <code>options()</code> or
+<code>xportr_options()</code>, <code>{xportr}</code> sees the column
+<code>Variable</code> as the valid name rather than
+<code>variable</code>. You can inspect <code>?xportr_options</code> to
+look at additional options.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">xportr_options</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">xportr.variable_name =</span> <span class="st">&quot;Variable&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">xportr.label =</span> <span class="st">&quot;Label&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">xportr.type_name =</span> <span class="st">&quot;Data Type&quot;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="at">xportr.format_name =</span> <span class="st">&quot;Format&quot;</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="at">xportr.length =</span> <span class="st">&quot;Length&quot;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  <span class="at">xportr.order_name =</span> <span class="st">&quot;Order&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># Or alternatively</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="fu">options</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="at">xportr.variable_name =</span> <span class="st">&quot;Variable&quot;</span>,</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="at">xportr.label =</span> <span class="st">&quot;Label&quot;</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="at">xportr.type_name =</span> <span class="st">&quot;Data Type&quot;</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="at">xportr.format_name =</span> <span class="st">&quot;Format&quot;</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  <span class="at">xportr.length =</span> <span class="st">&quot;Length&quot;</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>  <span class="at">xportr.order_name =</span> <span class="st">&quot;Order&quot;</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>)</span></code></pre></div>
+<p>Below is the full list of column name options and their defaults.</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Option</th>
+<th>Default</th>
+<th>Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>xportr.domain_name</code></td>
+<td><code>&quot;dataset&quot;</code></td>
+<td>Domain/dataset name column in variable metadata</td>
+</tr>
+<tr class="even">
+<td><code>xportr.variable_name</code></td>
+<td><code>&quot;variable&quot;</code></td>
+<td>Variable name column</td>
+</tr>
+<tr class="odd">
+<td><code>xportr.type_name</code></td>
+<td><code>&quot;type&quot;</code></td>
+<td>Variable type column</td>
+</tr>
+<tr class="even">
+<td><code>xportr.label</code></td>
+<td><code>&quot;label&quot;</code></td>
+<td>Variable label column</td>
+</tr>
+<tr class="odd">
+<td><code>xportr.length</code></td>
+<td><code>&quot;length&quot;</code></td>
+<td>Variable length column</td>
+</tr>
+<tr class="even">
+<td><code>xportr.order_name</code></td>
+<td><code>&quot;order&quot;</code></td>
+<td>Variable order column</td>
+</tr>
+<tr class="odd">
+<td><code>xportr.format_name</code></td>
+<td><code>&quot;format&quot;</code></td>
+<td>Variable format column</td>
+</tr>
+<tr class="even">
+<td><code>xportr.df_domain_name</code></td>
+<td><code>&quot;dataset&quot;</code></td>
+<td>Domain name column in dataset metadata</td>
+</tr>
+<tr class="odd">
+<td><code>xportr.df_label</code></td>
+<td><code>&quot;label&quot;</code></td>
+<td>Dataset label column in dataset metadata</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="are-we-being-too-verbose" class="section level1">
+<h1>Are we being too verbose?</h1>
+<p>One final note on the options. Five of the core <code>{xportr}</code>
+functions have the ability to set messaging as <code>&quot;none&quot;</code>,
+<code>&quot;message&quot;</code>, <code>&quot;warn&quot;</code>, <code>&quot;stop&quot;</code>.
+Setting each of these in all your calls can be a bit repetitive. You can
+use <code>options()</code> or <code>xportr_options()</code> to set these
+at a higher level and avoid this repetition.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>&quot;none&quot;</code></td>
+<td>Disables any messaging, keeping the console output clean
+(default)</td>
+</tr>
+<tr class="even">
+<td><code>&quot;message&quot;</code></td>
+<td>Sends a standard message to the console</td>
+</tr>
+<tr class="odd">
+<td><code>&quot;warn&quot;</code></td>
+<td>Sends a warning message to the console</td>
+</tr>
+<tr class="even">
+<td><code>&quot;stop&quot;</code></td>
+<td>Stops execution and sends an error message to the console</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Default verbose is set to `none`</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">xportr_options</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">xportr.type_verbose =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">xportr.label_verbose =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="at">xportr.length_verbose =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="at">xportr.order_verbose =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="at">xportr.format_verbose =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="fu">xportr_options</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">xportr.type_verbose =</span> <span class="st">&quot;message&quot;</span>, <span class="co"># Sends a standard message to the console</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">xportr.label_verbose =</span> <span class="st">&quot;message&quot;</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>  <span class="at">xportr.length_verbose =</span> <span class="st">&quot;warn&quot;</span>, <span class="co"># Sends a warning message to the console</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>  <span class="at">xportr.order_verbose =</span> <span class="st">&quot;warn&quot;</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a>  <span class="at">xportr.format_verbose =</span> <span class="st">&quot;stop&quot;</span> <span class="co"># Stops execution and sends an error message to the console</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>)</span></code></pre></div>
+<p>Note that any per-call <code>verbose</code> argument still overrides
+the option, so you can always tighten or loosen the level for a specific
+call without changing the global default.</p>
+</div>
+<div id="type-coercion-options" class="section level1">
+<h1>Type coercion options</h1>
+<p><code>{xportr}</code> also needs to know which R classes map to
+character XPT types and which map to numeric XPT types. These are
+unlikely to need changing unless your specification file uses
+non-standard type labels (e.g., <code>&quot;INT&quot;</code> instead of
+<code>&quot;integer&quot;</code>), but they are configurable if needed.</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Option</th>
+<th>Default</th>
+<th>Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>xportr.character_types</code></td>
+<td><code>&quot;character&quot;</code></td>
+<td>R classes treated as character in type coercion</td>
+</tr>
+<tr class="even">
+<td><code>xportr.character_metadata_types</code></td>
+<td><code>&quot;character&quot;</code>, <code>&quot;char&quot;</code>, <code>&quot;text&quot;</code>,
+<code>&quot;date&quot;</code>, …</td>
+<td>Metadata type strings mapped to character XPT</td>
+</tr>
+<tr class="odd">
+<td><code>xportr.numeric_types</code></td>
+<td><code>&quot;integer&quot;</code>, <code>&quot;float&quot;</code>,
+<code>&quot;numeric&quot;</code>, <code>&quot;posixct&quot;</code>, …</td>
+<td>R classes treated as numeric in type coercion</td>
+</tr>
+<tr class="even">
+<td><code>xportr.numeric_metadata_types</code></td>
+<td><code>&quot;integer&quot;</code>, <code>&quot;numeric&quot;</code>, <code>&quot;num&quot;</code>,
+<code>&quot;float&quot;</code></td>
+<td>Metadata type strings mapped to numeric XPT</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Tell xportr that &quot;INT&quot; in your spec means integer/numeric</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">xportr_options</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">xportr.numeric_metadata_types =</span> <span class="fu">c</span>(<span class="st">&quot;integer&quot;</span>, <span class="st">&quot;numeric&quot;</span>, <span class="st">&quot;num&quot;</span>, <span class="st">&quot;float&quot;</span>, <span class="st">&quot;INT&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="putting-it-all-together" class="section level1">
+<h1>Putting it all together</h1>
+<p>A typical script might start with a single
+<code>xportr_options()</code> block that configures everything up front.
+After that, all <code>{xportr}</code> calls pick up the settings
+automatically — no need to repeat yourself in every function call!</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">library</span>(xportr)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">xportr_options</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="co"># Column name mapping for our spec file</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">xportr.variable_name =</span> <span class="st">&quot;Variable&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">xportr.label =</span> <span class="st">&quot;Label&quot;</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">xportr.type_name =</span> <span class="st">&quot;Data Type&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">xportr.format_name =</span> <span class="st">&quot;Format&quot;</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">xportr.length =</span> <span class="st">&quot;Length&quot;</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">xportr.order_name =</span> <span class="st">&quot;Order&quot;</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="co"># Messaging preferences</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">xportr.type_verbose =</span> <span class="st">&quot;message&quot;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="at">xportr.label_verbose =</span> <span class="st">&quot;message&quot;</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  <span class="at">xportr.length_verbose =</span> <span class="st">&quot;warn&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="at">xportr.order_verbose =</span> <span class="st">&quot;warn&quot;</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>  <span class="at">xportr.format_verbose =</span> <span class="st">&quot;none&quot;</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>)</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>ADSL <span class="sc">|&gt;</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  <span class="fu">xportr_metadata</span>(var_spec, <span class="st">&quot;ADSL&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>  <span class="fu">xportr_type</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>  <span class="fu">xportr_length</span>(<span class="at">length_source =</span> <span class="st">&quot;metadata&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>  <span class="fu">xportr_label</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>  <span class="fu">xportr_order</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>  <span class="fu">xportr_format</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>  <span class="fu">xportr_df_label</span>(dataset_spec) <span class="sc">|&gt;</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="fu">xportr_write</span>(<span class="st">&quot;adsl.xpt&quot;</span>)</span></code></pre></div>
+<p>You can confirm what is currently set at any time by calling
+<code>xportr_options()</code> with no arguments, or use base R’s
+<code>getOption()</code> for a single value:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">xportr_options</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="sc">$</span>xportr.df_domain_name</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;dataset&quot;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  </span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="sc">$</span>xportr.df_label</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;label&quot;</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  </span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="sc">$</span>xportr.domain_name</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;dataset&quot;</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  </span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="sc">$</span>xportr.variable_name</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;variable&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  </span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="sc">$</span>xportr.type_name</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;type&quot;</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  </span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="sc">$</span>xportr.label</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;label&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  </span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="sc">$</span>xportr.length</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;length&quot;</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>  </span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>  <span class="sc">$</span>xportr.order_name</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;order&quot;</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  </span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>  <span class="sc">$</span>xportr.format_name</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;format&quot;</span></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>  </span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>  <span class="sc">$</span>xportr.format_verbose</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a>  </span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a>  <span class="sc">$</span>xportr.label_verbose</span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a>  </span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a>  <span class="sc">$</span>xportr.length_verbose</span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a>  </span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a>  <span class="sc">$</span>xportr.type_verbose</span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a>  </span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a>  <span class="sc">$</span>xportr.order_verbose</span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a>  </span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a>  <span class="sc">$</span>xportr.character_types</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;character&quot;</span></span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a>  </span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a>  <span class="sc">$</span>xportr.character_metadata_types</span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a>   [<span class="dv">1</span>] <span class="st">&quot;character&quot;</span>          <span class="st">&quot;char&quot;</span>               <span class="st">&quot;text&quot;</span>              </span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>   [<span class="dv">4</span>] <span class="st">&quot;date&quot;</span>               <span class="st">&quot;posixct&quot;</span>            <span class="st">&quot;posixt&quot;</span>            </span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a>   [<span class="dv">7</span>] <span class="st">&quot;datetime&quot;</span>           <span class="st">&quot;time&quot;</span>               <span class="st">&quot;partialdate&quot;</span>       </span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>  [<span class="dv">10</span>] <span class="st">&quot;partialtime&quot;</span>        <span class="st">&quot;partialdatetime&quot;</span>    <span class="st">&quot;incompletedatetime&quot;</span></span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a>  [<span class="dv">13</span>] <span class="st">&quot;durationdatetime&quot;</span>   <span class="st">&quot;intervaldatetime&quot;</span>  </span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a>  </span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a>  <span class="sc">$</span>xportr.numeric_metadata_types</span>
+<span id="cb7-55"><a href="#cb7-55" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;integer&quot;</span> <span class="st">&quot;numeric&quot;</span> <span class="st">&quot;num&quot;</span>     <span class="st">&quot;float&quot;</span>  </span>
+<span id="cb7-56"><a href="#cb7-56" tabindex="-1"></a>  </span>
+<span id="cb7-57"><a href="#cb7-57" tabindex="-1"></a>  <span class="sc">$</span>xportr.numeric_types</span>
+<span id="cb7-58"><a href="#cb7-58" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;integer&quot;</span> <span class="st">&quot;float&quot;</span>   <span class="st">&quot;numeric&quot;</span> <span class="st">&quot;posixct&quot;</span> <span class="st">&quot;posixt&quot;</span>  <span class="st">&quot;time&quot;</span>    <span class="st">&quot;date&quot;</span>   </span>
+<span id="cb7-59"><a href="#cb7-59" tabindex="-1"></a>  [<span class="dv">8</span>] <span class="st">&quot;hms&quot;</span></span>
+<span id="cb7-60"><a href="#cb7-60" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">&quot;xportr.label&quot;</span>)</span>
+<span id="cb7-61"><a href="#cb7-61" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;label&quot;</span></span>
+<span id="cb7-62"><a href="#cb7-62" tabindex="-1"></a><span class="fu">getOption</span>(<span class="st">&quot;xportr.type_verbose&quot;</span>)</span>
+<span id="cb7-63"><a href="#cb7-63" tabindex="-1"></a>  [<span class="dv">1</span>] <span class="st">&quot;none&quot;</span></span></code></pre></div>
+<p>Options persist for the life of your R session. To reset a single
+option back to its default, set it explicitly:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">xportr.label =</span> <span class="st">&quot;label&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># Or equivalently</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">xportr_options</span>(<span class="at">xportr.label =</span> <span class="st">&quot;label&quot;</span>)</span></code></pre></div>
+<p>To reset <strong>all</strong> xportr options at once, restart your R
+session or use <code>withr::with_options()</code> to scope changes to a
+block of code without permanently affecting the global state.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -34,8 +34,8 @@ var_names_log <- function(tidy_names_df, verbose) {
   assert_data_frame(tidy_names_df)
   assert_choice(verbose, choices = .internal_verbose_choices)
 
-  only_renames <- tidy_names_df %>%
-    filter(original_varname != renamed_var) %>%
+  only_renames <- tidy_names_df |>
+    filter(original_varname != renamed_var) |>
     mutate(
       renamed_msg = glue(
         "Var {col_pos} : '{original_varname}' was renamed to 'renamed_var'"
@@ -60,7 +60,7 @@ var_names_log <- function(tidy_names_df, verbose) {
 
   # Message checking for duplicate variable names after renamed (Pretty sure
   # this is impossible) but good to have a check none-the-less.
-  dups <- tidy_names_df %>% filter(renamed_n > 1)
+  dups <- tidy_names_df |> filter(renamed_n > 1)
   if (nrow(dups) != 0) {
     cli_alert_danger(
       glue(
@@ -174,6 +174,29 @@ label_log <- function(miss_vars, verbose) {
     xportr_logger(
       c("Variable(s) present in dataframe but doesn't exist in `metadata`.",
         x = glue("Problem with {encode_vars(miss_vars)}")
+      ),
+      type = verbose
+    )
+  }
+}
+
+#' Utility for Variable Labels Length
+#'
+#' @param #' Utility for Variable Labels
+#'
+#' @param err_len Too long variable labels in metadata
+#' @param verbose Provides additional messaging for user
+#'
+#' @return Output to Console
+#' @noRd
+label_len_log <- function(err_len, verbose) {
+  assert_character(err_len)
+  assert_choice(verbose, choices = .internal_verbose_choices)
+
+  if (length(err_len) > 0) {
+    xportr_logger(
+      c("Length of variable label must be 40 characters or less.",
+        x = glue("Problem with {encode_vars(err_len)}.")
       ),
       type = verbose
     )

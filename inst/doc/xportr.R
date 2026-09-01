@@ -48,7 +48,7 @@ datatable_template <- function(input_data) {
       pageLength = 5,
       lengthMenu = c(5, 10, 15, 20)
     )
-  ) %>%
+  ) |>
     formatStyle(
       0,
       target = "row",
@@ -77,12 +77,12 @@ datatable_template(adsl_xportr)
 var_spec <- read_xlsx(
   system.file(file.path("specs/", "ADaM_spec.xlsx"), package = "xportr"),
   sheet = "Variables"
-) %>%
-  rename(type = "Data Type") %>%
+) |>
+  rename(type = "Data Type") |>
   rename_with(tolower)
 
 ## ----echo = FALSE, eval = TRUE----------------------------
-var_spec_view <- var_spec %>%
+var_spec_view <- var_spec |>
   filter(dataset == "ADSL")
 
 datatable_template(var_spec_view)
@@ -100,7 +100,7 @@ str(adsl_type)
 str(adsl_xportr)
 
 ## ---------------------------------------------------------
-adsl_length <- adsl_xportr %>% xportr_length(var_spec, domain = "ADSL", verbose = "message")
+adsl_length <- adsl_xportr |> xportr_length(var_spec, domain = "ADSL", verbose = "message")
 
 ## ----max_height = "200px", echo = FALSE-------------------
 str(adsl_length)
@@ -112,7 +112,7 @@ adsl_order <- xportr_order(adsl_xportr, var_spec, domain = "ADSL", verbose = "me
 datatable_template(adsl_order)
 
 ## ----max_height = "200px", echo = FALSE-------------------
-adsl_fmt_pre <- adsl_xportr %>%
+adsl_fmt_pre <- adsl_xportr |>
   select(TRTSDT, TRTEDT, TRTSDTM, TRTEDTM)
 
 tribble(
@@ -124,10 +124,10 @@ tribble(
 )
 
 ## ---------------------------------------------------------
-adsl_fmt <- adsl_xportr %>% xportr_format(var_spec, domain = "ADSL")
+adsl_fmt <- adsl_xportr |> xportr_format(var_spec, domain = "ADSL")
 
 ## ----max_height = "200px", echo = FALSE-------------------
-adsl_fmt_post <- adsl_fmt %>%
+adsl_fmt_post <- adsl_fmt |>
   select(TRTSDT, TRTEDT, TRTSDTM, TRTEDTM)
 
 tribble(
@@ -144,17 +144,17 @@ adsl_no_lbls <- haven::zap_label(adsl_xportr)
 str(adsl_no_lbls)
 
 ## ---------------------------------------------------------
-adsl_lbl <- adsl_xportr %>% xportr_label(var_spec, domain = "ADSL", "message")
+adsl_lbl <- adsl_xportr |> xportr_label(var_spec, domain = "ADSL", "message")
 
 ## ----max_height = "200px"---------------------------------
 str(adsl_lbl)
 
 ## ---------------------------------------------------------
-adsl_xportr %>%
-  xportr_type(var_spec, "ADSL", "message") %>%
-  xportr_length(var_spec, "ADSL", verbose = "message") %>%
-  xportr_label(var_spec, "ADSL", "message") %>%
-  xportr_order(var_spec, "ADSL", "message") %>%
-  xportr_format(var_spec, "ADSL") %>%
+adsl_xportr |>
+  xportr_type(var_spec, "ADSL", "message") |>
+  xportr_length(var_spec, "ADSL", verbose = "message") |>
+  xportr_label(var_spec, "ADSL", "message") |>
+  xportr_order(var_spec, "ADSL", "message") |>
+  xportr_format(var_spec, "ADSL") |>
   xportr_write("adsl.xpt")
 

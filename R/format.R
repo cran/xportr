@@ -134,19 +134,19 @@ xportr_format <- function(.df,
     # If 'domain' passed by user isn't found in metadata, return error
     if (!domain %in% metadata[[domain_name]]) log_no_domain(domain, domain_name, verbose)
 
-    metadata <- metadata %>%
+    metadata <- metadata |>
       filter(!!sym(domain_name) == .env$domain & !is.na(!!sym(format_name)))
   } else {
     # Common check for multiple variables name
     check_multiple_var_specs(metadata, variable_name)
   }
 
-  filtered_metadata <- metadata %>%
+  filtered_metadata <- metadata |>
     filter(!!sym(variable_name) %in% names(.df))
 
-  format <- filtered_metadata %>%
-    select(!!sym(format_name)) %>%
-    unlist() %>%
+  format <- filtered_metadata |>
+    select(!!sym(format_name)) |>
+    unlist() |>
     toupper()
 
   names(format) <- filtered_metadata[[variable_name]]
@@ -230,7 +230,7 @@ check_formats <- function(.df, format, verbose) {
       # check if the format is either one of the expected formats or follows the regular expression for w.d format
       if (
         isFALSE(format_sas %in% toupper(expected_formats)) &&
-          isFALSE(str_detect(format_sas, pattern = format_regex))
+          isFALSE(grepl(format_regex, format_sas))
       ) {
         message <- glue(
           "(xportr::xportr_format)",

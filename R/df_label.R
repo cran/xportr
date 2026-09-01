@@ -61,9 +61,9 @@ xportr_df_label <- function(.df,
 
   if (inherits(metadata, "Metacore")) metadata <- metadata$ds_spec
 
-  label <- metadata %>%
-    filter(!!sym(domain_name) == .env$domain) %>%
-    select(!!sym(label_name)) %>%
+  label <- metadata |>
+    filter(!!sym(domain_name) == .env$domain) |>
+    select(!!sym(label_name)) |>
     # If a dataframe is used this will also be a dataframe, change to character.
     as.character()
 
@@ -71,7 +71,7 @@ xportr_df_label <- function(.df,
     abort("Length of dataset label must be 40 characters or less.")
   }
 
-  if (str_detect(label, "[^[:ascii:]]")) {
+  if (grepl("[^[:ascii:]]", label, perl = TRUE)) {
     abort("`label` cannot contain any non-ASCII, symbol or special characters.")
   }
 

@@ -54,7 +54,8 @@ We will also explore the following:
 * What goes in a Submission to a Health Authority, and what role does `{xportr}` play in that Submission?
 * What is `{xportr}` validating behind the scenes?
 * Breakdown of `{xportr}` and a ADaM dataset specification file.
-* Using `options()` and `xportr_metadata()` to enhance your `{xportr}` experience.
+* Using `xportr_metadata()` to reduce repetitive metadata arguments across function calls.
+* Setting `{xportr}` options — see the companion vignette [You got options](options.html) for a full walkthrough.
 * Understanding the warning and error messages for each `{xportr}` function.
 * A brief discussion on future work.
 
@@ -101,23 +102,11 @@ We will focus on warning and error messaging with contrived examples from these 
 **NOTE:** We have made the ADSL and Spec available in this package. Users can find additional datasets and specification files on our [repo](https://github.com/atorus-research/xportr) in the `example_data_specs` folder. This is to keep the package to a minimum size.  
 
 
-## Using `options()` and `xportr_metadata()` to enhance your experience.
+## Using `xportr_metadata()` to reduce repetition
 
-Before we dive into the functions, we want to point out some quality of life utilities to make your `xpt` generation life a little bit easier.
-
-* `options()`
-* `xportr_options()`
-* `xportr_metadata()` 
+`{xportr}` also supports options for controlling column name mapping and messaging verbosity. Rather than covering those here, see the dedicated vignette: [You got options](options.html).
 
 **NOTE:** As long as you have a well-defined _metadata object_ you do NOT need to use `options()` or `xportr_metadata()`, but we find these handy to use and think they deserve a quick mention!
-
-## You've got `options()` or `xportr_options()`
-
-`{xportr}` is built with certain assumptions around specification column names and information in those columns. We have found that each company specification file can differ slightly from our assumptions. For example, one company might call a column `Variables`, another `Variable` and another `variables`.  Rather than trying to regex ourselves out of this situation, we have introduced `options()`.  `options()` allows users to control those assumptions inside `{xportr}` functions based on their needs.
-
-Additionally, we have a helper function `xportr_options()` which works just like the `options()` but, it can also be used to get the current state of the xportr options.
-
-Let's take a look at our example specification file names available in this package. We can see that all the columns start with an upper case letter and have spaces in several of them. We could convert all the column names to lower case and deal with the spacing using some `{dplyr}` functions or base R, or we could just use `options()`! 
 
 ```{r, message = FALSE}
 library(xportr)
@@ -125,52 +114,7 @@ library(dplyr)
 library(haven)
 
 data("adsl_xportr", "var_spec", "dataset_spec", package = "xportr")
-colnames(var_spec)
 ADSL <- adsl_xportr
-```
-
-By using `options()` or `xportr_options()` at the beginning of our script we can tell `{xportr}` what the valid names are (see chunk below). Please note that before we set the options the package assumed every thing was in lowercase and there were no spaces in the names. After running `options()` or `xportr_options()`, `{xportr}` sees the column `Variable` as the valid name rather than `variable`.  You can inspect `xportr_options` function docs to look at additional options.
-
-```{r, eval = FALSE}
-xportr_options(
-  xportr.variable_name = "Variable",
-  xportr.label = "Label",
-  xportr.type_name = "Data Type",
-  xportr.format = "Format",
-  xportr.length = "Length",
-  xportr.order_name = "Order"
-)
-
-# Or alternatively
-options(
-  xportr.variable_name = "Variable",
-  xportr.label = "Label",
-  xportr.type_name = "Data Type",
-  xportr.format = "Format",
-  xportr.length = "Length",
-  xportr.order_name = "Order"
-)
-```
-
-## Are we being too verbose?
-
-One final note on the options.  4 of the core `{xportr}` functions have the ability to set messaging as `"none", "message", "warn", "stop"`. Setting each of these in all your calls can be a bit repetitive.  You can use `options()` or `xportr_options()` to set these at a higher level and avoid this repetition.
-
-```{r, eval = FALSE}
-# Default verbose is set to `none`
-xportr_options(
-  xportr.format_verbose = "none",
-  xportr.label_verbose = "none",
-  xportr.length_verbose = "none",
-  xportr.type_verbose = "none"
-)
-
-xportr_options(
-  xportr.format_verbose = "none", # Disables any messaging, keeping the console output clean
-  xportr.label_verbose = "message", # Sends a standard message to the console
-  xportr.length_verbose = "warn", # Sends a warning message to the console
-  xportr.type_verbose = "stop" # Stops execution and sends an error message to the console
-)
 ```
 
 ## Going meta
@@ -178,13 +122,13 @@ xportr_options(
 Each of the core `{xportr}` functions requires several inputs: A valid dataframe, a metadata object and a domain name, along with optional messaging. For example, here is a simple call using all of the functions. As you can see, a lot of information is repeated in each call.     
 
 ```{r, eval = FALSE}
-ADSL %>%
-  xportr_type(var_spec, "ADSL", "message") %>%
-  xportr_length(var_spec, "ADSL", verbose = "message") %>%
-  xportr_label(var_spec, "ADSL", "message") %>%
-  xportr_order(var_spec, "ADSL", "message") %>%
-  xportr_format(var_spec, "ADSL") %>%
-  xportr_df_label(dataset_spec, "ADSL") %>%
+ADSL |>
+  xportr_type(var_spec, "ADSL", "message") |>
+  xportr_length(var_spec, "ADSL", verbose = "message") |>
+  xportr_label(var_spec, "ADSL", "message") |>
+  xportr_order(var_spec, "ADSL", "message") |>
+  xportr_format(var_spec, "ADSL") |>
+  xportr_df_label(dataset_spec, "ADSL") |>
   xportr_write("adsl.xpt")
 ```
 
@@ -192,14 +136,14 @@ To help reduce these repetitive calls, we have created `xportr_metadata()`. A us
 
 
 ```{r, eval = FALSE}
-ADSL %>%
-  xportr_metadata(var_spec, "ADSL") %>%
-  xportr_type() %>%
-  xportr_length(length_source = "metadata") %>%
-  xportr_label() %>%
-  xportr_order() %>%
-  xportr_format() %>%
-  xportr_df_label(dataset_spec) %>%
+ADSL |>
+  xportr_metadata(var_spec, "ADSL") |>
+  xportr_type() |>
+  xportr_length(length_source = "metadata") |>
+  xportr_label() |>
+  xportr_order() |>
+  xportr_format() |>
+  xportr_df_label(dataset_spec) |>
   xportr_write("adsl.xpt")
 ```
 
@@ -216,12 +160,12 @@ First, let's read in the specification file and call it `var_spec`.  Note that w
 Similarly, we can read the Dataset spec file and call it `dataset_spec`.
 
 ```{r}
-var_spec <- var_spec %>%
-  rename(type = "Data Type") %>%
+var_spec <- var_spec |>
+  rename(type = "Data Type") |>
   rename_with(tolower)
 
-dataset_spec <- dataset_spec %>%
-  rename(label = "Description") %>%
+dataset_spec <- dataset_spec |>
+  rename(label = "Description") |>
   rename_with(tolower)
 ```
 
@@ -233,7 +177,7 @@ columns2hide <- c(
 )
 
 datatable(
-  var_spec %>% select(-all_of(columns2hide)),
+  var_spec |> select(-all_of(columns2hide)),
   rownames = FALSE,
   filter = "top",
   options = list(
@@ -251,7 +195,7 @@ datatable(
     searching = FALSE,
     autoWidth = TRUE
   )
-) %>%
+) |>
   formatStyle(0,
     target = "row",
     color = "black",
@@ -271,12 +215,12 @@ In the  `ADSL` data we  have several columns that are in the Date type: `TRTSDT`
 We will change one variable type to a [factor variable](https://forcats.tidyverse.org/), which is a common data structure in R, to give us some educational opportunities to see `xportr_type()` in action. 
 
 ```{r}
-adsl_fct <- ADSL %>%
+adsl_fct <- ADSL |>
   mutate(STUDYID = as_factor(STUDYID))
 ```
 
 ```{r, echo = FALSE}
-adsl_glimpse <- adsl_fct %>%
+adsl_glimpse <- adsl_fct |>
   select(STUDYID, TRTSDT, TRTEDT, SCRFDT, EOSDT, FRVDT, RANDDT, DTHDT, LSTALVDT)
 ```
 
@@ -289,7 +233,7 @@ adsl_type <- xportr_type(.df = adsl_fct, metadata = var_spec, domain = "ADSL", v
 ```
 
 ```{r, echo = FALSE}
-adsl_type_glimpse <- adsl_type %>%
+adsl_type_glimpse <- adsl_type |>
   select(STUDYID, TRTSDT, TRTEDT, SCRFDT, EOSDT, FRVDT, RANDDT, DTHDT, LSTALVDT)
 ```
 
@@ -366,7 +310,7 @@ For this example, we are going to manipulate both the metadata and the `ADSL` da
 Remember in the length example, the labels were on the original dataset as seen in the `str()` output.
 
 ```{r, echo = TRUE}
-var_spec_lbl <- var_spec %>%
+var_spec_lbl <- var_spec |>
   mutate(label = if_else(variable == "TRTSDT",
     "Length of variable label must be 40 characters or less", label
   ))
@@ -431,8 +375,8 @@ Formats play an important role in the SAS language and have a column in specific
 This example is slightly different from previous examples. You will need to use `xportr_type()` to coerce R Date variables and others types to character or numeric. Only then can you use `xportr_format()` to apply the format column to the dataset.
 
 ```{r, echo = TRUE}
-adsl_fmt <- ADSL %>%
-  xportr_type(metadata = var_spec, domain = "ADSL", verbose = "warn") %>%
+adsl_fmt <- ADSL |>
+  xportr_type(metadata = var_spec, domain = "ADSL", verbose = "warn") |>
   xportr_format(metadata = var_spec, domain = "ADSL")
 ```
 
@@ -452,14 +396,14 @@ We will make use of `xportr_metadata()` to reduce repetitive metadata and domain
 It is also note worthy that you can set the dataset label using the `xportr_df_label` and a `dataset_spec` which will be used by the `xportr_write()`
 
 ```{r, echo = TRUE, error = TRUE}
-ADSL %>%
-  xportr_metadata(var_spec, "ADSL") %>%
-  xportr_type() %>%
-  xportr_length(length_source = "metadata") %>%
-  xportr_label() %>%
-  xportr_order() %>%
-  xportr_format() %>%
-  xportr_df_label(dataset_spec) %>%
+ADSL |>
+  xportr_metadata(var_spec, "ADSL") |>
+  xportr_type() |>
+  xportr_length(length_source = "metadata") |>
+  xportr_label() |>
+  xportr_order() |>
+  xportr_format() |>
+  xportr_df_label(dataset_spec) |>
   xportr_write(path = "adsl.xpt", strict_checks = FALSE)
 ```
 
@@ -468,7 +412,7 @@ Success! We have applied types, lengths, labels, ordering and formats to our dat
 The next two examples showcase the `strict_checks = TRUE` option in `xportr_write()` where we will look at formats and labels.
 
 ```{r, echo = TRUE, error = TRUE}
-ADSL %>%
+ADSL |>
   xportr_write(path = "adsl.xpt", metadata = dataset_spec, domain = "ADSL", strict_checks = TRUE)
 ```
 
@@ -478,17 +422,17 @@ As there at several `---DT` type variables, `xportr_write()` detects the lack of
 Below we have manipulated the labels to again be greater than 40 characters for `TRTSDT`. We have turned off `xportr_label()` verbose options to only produce a message. However, `xportr_write()` with `strict_checks = TRUE` will error out as this is one of the many `xpt_validate()` checks going on behind the scenes.
 
 ```{r, echo = TRUE, error = TRUE}
-var_spec_lbl <- var_spec %>%
+var_spec_lbl <- var_spec |>
   mutate(label = if_else(variable == "TRTSDT",
     "Length of variable label must be 40 characters or less", label
   ))
 
-ADSL %>%
-  xportr_metadata(var_spec_lbl, "ADSL") %>%
-  xportr_label() %>%
-  xportr_type() %>%
-  xportr_format() %>%
-  xportr_df_label(dataset_spec) %>%
+ADSL |>
+  xportr_metadata(var_spec_lbl, "ADSL") |>
+  xportr_label() |>
+  xportr_type() |>
+  xportr_format() |>
+  xportr_df_label(dataset_spec) |>
   xportr_write(path = "adsl.xpt", strict_checks = TRUE)
 ```
 
@@ -507,14 +451,14 @@ xportr(
 
 `xportr()` is equivalent to calling the following functions individually:    
 ```{r, echo = TRUE, error = TRUE}
-ADSL %>%
-  xportr_metadata(var_spec, "ADSL") %>%
-  xportr_type() %>%
-  xportr_length(length_source = "metadata") %>%
-  xportr_label() %>%
-  xportr_order() %>%
-  xportr_format() %>%
-  xportr_df_label(dataset_spec) %>%
+ADSL |>
+  xportr_metadata(var_spec, "ADSL") |>
+  xportr_type() |>
+  xportr_length(length_source = "metadata") |>
+  xportr_label() |>
+  xportr_order() |>
+  xportr_format() |>
+  xportr_df_label(dataset_spec) |>
   xportr_write(path = "adsl.xpt", strict_checks = FALSE)
 ```
 

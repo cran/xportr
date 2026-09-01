@@ -42,11 +42,9 @@ Returns the input dataframe invisibly
 Wrapper to apply all core xportr functions and write xpt
 }
 \examples{
-\dontshow{if (requireNamespace("magrittr")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data("adsl_xportr", "dataset_spec", "var_spec")
 adsl <- adsl_xportr
 
-library(magrittr)
 test_dir <- tempdir()
 
 pipeline_path <- file.path(test_dir, "adslpipe.xpt")
@@ -58,14 +56,14 @@ names(dataset_spec_low)[[2]] <- "label"
 var_spec_low <- setNames(var_spec, tolower(names(var_spec)))
 names(var_spec_low)[[5]] <- "type"
 
-adsl \%>\%
-  xportr_metadata(var_spec_low, "ADSL", verbose = "none") \%>\%
-  xportr_type() \%>\%
-  xportr_length() \%>\%
-  xportr_label() \%>\%
-  xportr_order() \%>\%
-  xportr_format() \%>\%
-  xportr_df_label(dataset_spec_low) \%>\%
+adsl |>
+  xportr_metadata(var_spec_low, "ADSL", verbose = "none") |>
+  xportr_type() |>
+  xportr_length() |>
+  xportr_label() |>
+  xportr_order() |>
+  xportr_format() |>
+  xportr_df_label(dataset_spec_low) |>
   xportr_write(pipeline_path)
 
 # `xportr()` can be used to apply a whole pipeline at once
@@ -77,5 +75,4 @@ xportr(
   verbose = "none",
   path = xportr_path
 )
-\dontshow{\}) # examplesIf}
 }
